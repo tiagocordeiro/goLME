@@ -1,1 +1,1 @@
-web: gunicorn lme.wsgi
+web: gunicorn golme.wsgi
