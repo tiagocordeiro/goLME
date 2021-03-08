@@ -1,0 +1,58 @@
+[
+  {
+    "model": "core.timeserie",
+    "pk": 1,
+    "fields": {
+      "name": "cobre",
+      "code": "LME/PR_CU.2"
+    }
+  },
+  {
+    "model": "core.timeserie",
+    "pk": 2,
+    "fields": {
+      "name": "zinco",
+      "code": "LME/PR_ZI.2"
+    }
+  },
+  {
+    "model": "core.timeserie",
+    "pk": 3,
+    "fields": {
+      "name": "aluminio",
+      "code": "LME/PR_AL.2"
+    }
+  },
+  {
+    "model": "core.timeserie",
+    "pk": 4,
+    "fields": {
+      "name": "chumbo",
+      "code": "LME/PR_PB.2"
+    }
+  },
+  {
+    "model": "core.timeserie",
+    "pk": 5,
+    "fields": {
+      "name": "estanho",
+      "code": "LME/PR_TN.2"
+    }
+  },
+  {
+    "model": "core.timeserie",
+    "pk": 6,
+    "fields": {
+      "name": "niquel",
+      "code": "LME/PR_NI.2"
+    }
+  },
+  {
+    "model": "core.timeserie",
+    "pk": 7,
+    "fields": {
+      "name": "dolar",
+      "code": "BUNDESBANK/BBEX3_D_BRL_USD_CA_AB_000"
+    }
+  }
+]

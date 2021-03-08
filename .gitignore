@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Django local dev folders
+/staticfiles/
+/mediafiles/
+
+$ Database for local dev
+# local postgres data files
+.pgdata
