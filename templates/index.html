@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LME</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+  <script src="https://cdn.datatables.net/plug-ins/1.10.19/sorting/datetime-moment.js"></script>
+</head>
+<body>
+
+<table id="lme" class="display" style="width:100%">
+  <thead>
+  <tr>
+    <th>Data</th>
+    <th>Cobre</th>
+    <th>Zinco</th>
+    <th>Alumínio</th>
+    <th>Chumbo</th>
+    <th>Estanho</th>
+    <th>Níquel</th>
+    <th>Dolar</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for cotacao in lme %}
+    <tr style="text-align: center">
+      <td>{{ cotacao.date|date:'d/m/Y' }}</td>
+      <td>{{ cotacao.cobre }}</td>
+      <td>{{ cotacao.zinco }}</td>
+      <td>{{ cotacao.aluminio }}</td>
+      <td>{{ cotacao.chumbo }}</td>
+      <td>{{ cotacao.estanho }}</td>
+      <td>{{ cotacao.niquel }}</td>
+      <td>{{ cotacao.dolar }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+  <tfoot>
+  <tr>
+    <th>Data</th>
+    <th>Cobre</th>
+    <th>Zinco</th>
+    <th>Alumínio</th>
+    <th>Chumbo</th>
+    <th>Estanho</th>
+    <th>Níquel</th>
+    <th>Dolar</th>
+  </tr>
+  </tfoot>
+</table>
+
+<p>{{ date_from }} - {{ date_to }}</p>
+
+<script type="application/javascript">
+    $(document).ready(function () {
+        $.fn.dataTable.moment('DD/MM/YYY');
+
+        $('#lme').DataTable({
+            "order": [[0, "desc"]],
+            "columnDefs": [{
+                "render": function (data) {
+                    if (data == "None") {
+                        return "-"
+                    } else {
+                        return data
+                    }
+                },
+                "targets": [1, 2, 3, 4, 5, 6, 7]
+            }],
+        });
+    });
+</script>
+
+</body>
+</html>

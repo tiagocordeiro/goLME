@@ -25,10 +25,13 @@ class Command(BaseCommand):
         df = pd.DataFrame(todo_periodo)
         df.reset_index(level=0, inplace=True)
 
-        todo_periodo.columns = colunas
+        df.fillna(method='ffill', inplace=True)
+        df.fillna(method='bfill', inplace=True)
+
+        df.columns = colunas
 
         cotacoes_dict = []
-        for cotacao in todo_periodo.itertuples():
+        for cotacao in df.itertuples():
             cotacao = LondonMetalExchange(date=cotacao[1],
                                           cobre=cotacao[2],
                                           zinco=cotacao[3],
