@@ -1,0 +1,70 @@
+{% load static %}
+{% load humanize %}
+{% load core_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LME</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js" integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<table id="lme" class="display" style="width:100%" border="1">
+  <thead>
+  <tr>
+    <th>Data</th>
+    <th>Cobre</th>
+    <th>Zinco</th>
+    <th>Alumínio</th>
+    <th>Chumbo</th>
+    <th>Estanho</th>
+    <th>Níquel</th>
+    <th>Dolar</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% regroup lme by date|date:'W / Y' as dates_items %}
+  {% for week in dates_items %}
+    {% for item in week.list %}
+      <tr style="text-align: center">
+        <td>{{ item.date|date:'d/m/Y' }}</td>
+        <td>{{ item.cobre }}</td>
+        <td>{{ item.zinco }}</td>
+        <td>{{ item.aluminio }}</td>
+        <td>{{ item.chumbo }}</td>
+        <td>{{ item.estanho }}</td>
+        <td>{{ item.niquel }}</td>
+        <td>{{ item.dolar }}</td>
+      </tr>
+    {% endfor %}
+    <tr style="text-align: center">
+      <td>Média da semana:<br> {{ week.grouper }}</td>
+      <td>{{ week.list|media:"cobre"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"zinco"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"aluminio"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"chumbo"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"estanho"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"niquel"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"dolar"|floatformat:2 }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+  <tfoot>
+  <tr>
+    <th>Data</th>
+    <th>Cobre</th>
+    <th>Zinco</th>
+    <th>Alumínio</th>
+    <th>Chumbo</th>
+    <th>Estanho</th>
+    <th>Níquel</th>
+    <th>Dolar</th>
+  </tr>
+  </tfoot>
+</table>
+
+</body>
+</html>
