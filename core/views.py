@@ -3,6 +3,7 @@ from datetime import datetime
 
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 from .facade import get_lme, get_last_five_weeks, get_last, json_builder, chart_builder
 from .models import LondonMetalExchange
@@ -35,6 +36,7 @@ def api_view(request, date_from=get_last_five_weeks(), date_to=get_last(), limit
     return JsonResponse(data)
 
 
+@xframe_options_exempt
 def chart(request, date_from=get_last_five_weeks(), date_to=get_last(),
           chart_id='chart_LME', chart_type='line', chart_height=350):
     context = chart_builder(date_from, date_to, chart_id, chart_type, chart_height)
