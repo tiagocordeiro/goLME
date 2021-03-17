@@ -27,7 +27,7 @@ def group_by_week(request):
     return render(request, 'group_by_week.html', context)
 
 
-def api_view(request, date_from=get_last_five_weeks(), date_to=get_last(), limit=100):
+def api_view(request, date_from=None, date_to=None, limit=100):
     lme_prices = get_lme(date_from=date_from, date_to=date_to, limit=limit)
 
     json_data = json_builder(lme_prices)
@@ -37,8 +37,7 @@ def api_view(request, date_from=get_last_five_weeks(), date_to=get_last(), limit
 
 
 @xframe_options_exempt
-def chart(request, date_from=get_last_five_weeks(), date_to=get_last(),
-          chart_id='chart_LME', chart_type='line', chart_height=350):
+def chart(request, date_from=None, date_to=None, chart_id='chart_LME', chart_type='line', chart_height=350):
     context = chart_builder(date_from, date_to, chart_id, chart_type, chart_height)
 
     if request.path.split('/')[1] == 'grafico':
