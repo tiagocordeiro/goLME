@@ -25,7 +25,16 @@ def get_last_five_weeks():
     return str(datetime.strftime(first, '%d-%m-%Y'))
 
 
-def get_lme(date_from=get_last_five_weeks(), date_to=get_last(), limit=40):
+def get_lme(date_from=None, date_to=None, limit=40):
+    if date_from is None:
+        date_from = get_last_five_weeks()
+    else:
+        date_from = date_from
+    if date_to is None:
+        date_to = get_last()
+    else:
+        date_to = date_to
+
     date_from = datetime.strptime(date_from, '%d-%m-%Y')
     date_to = datetime.strptime(date_to, '%d-%m-%Y')
     lme = LondonMetalExchange.objects.filter(date__range=(date_from, date_to))[:limit]
@@ -50,8 +59,16 @@ def json_builder(lme_prices):
     return itens_list
 
 
-def chart_builder(date_from=get_last_five_weeks(), date_to=get_last(),
-                  chart_id='chart_LME', chart_type='line', chart_height=350):
+def chart_builder(date_from=None, date_to=None, chart_id='chart_LME', chart_type='line', chart_height=350):
+    if date_from is None:
+        date_from = get_last_five_weeks()
+    else:
+        date_from = date_from
+    if date_to is None:
+        date_to = get_last()
+    else:
+        date_to = date_to
+
     date_to = datetime.strptime(date_to, '%d-%m-%Y')
     date_from = datetime.strptime(date_from, '%d-%m-%Y')
 
