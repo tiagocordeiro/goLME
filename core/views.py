@@ -2,11 +2,11 @@ import datetime
 from datetime import datetime
 
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from .facade import get_lme, get_last_five_weeks, get_last, json_builder, chart_builder
-from .models import LondonMetalExchange
+from .models import LondonMetalExchange, Profile
 
 
 def index(request):
@@ -34,6 +34,35 @@ def api_view(request, date_from=None, date_to=None, limit=100):
 
     data = {"results": json_data}
     return JsonResponse(data)
+
+
+def api_view_with_token(request, date_from=None, date_to=None, limit=100):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+
+    try:
+        secret_key = request.headers["Token"]
+
+    except KeyError:
+        response = JsonResponse({"status": "false", "message": "Token não informado"}, status=500)
+        return response
+
+    try:
+        profile = Profile.objects.get(api_secret_key=secret_key)
+        lme_prices = get_lme(date_from=date_from, date_to=date_to, limit=limit)
+
+        json_data = json_builder(lme_prices)
+
+        data = {"results": json_data, "profile": f"{profile.user}", "remote_addr": f"{ip}"}
+        response = JsonResponse(data)
+        return response
+
+    except Profile.DoesNotExist:
+        response = JsonResponse({"status": "false", "message": "Token inválido"}, status=500)
+        return response
 
 
 @xframe_options_exempt
