@@ -1,4 +1,11 @@
+import uuid
+
+from django.contrib.auth.models import User
 from django.db import models
+
+
+def make_secret():
+    return str(uuid.uuid4())
 
 
 class TimeSerie(models.Model):
@@ -18,3 +25,18 @@ class LondonMetalExchange(models.Model):
 
     class Meta:
         verbose_name_plural = "cotações"
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(upload_to='profiles/')
+    api_view = models.BooleanField("Habilitar API programática", default=False)
+    api_secret_key = models.CharField(max_length=36, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Profiles"
+
+    def save(self, *args, **kwargs):
+        if self.api_secret_key is None:
+            self.api_secret_key = make_secret()
+        super(Profile, self).save(*args, **kwargs)
