@@ -2,10 +2,10 @@ import datetime
 from datetime import datetime
 
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from .facade import get_lme, get_last_five_weeks, get_last, json_builder, chart_builder
+from .facade import get_lme, json_builder, chart_builder, get_remote_addr
 from .models import LondonMetalExchange, Profile
 
 
@@ -19,6 +19,8 @@ def index(request):
 
 
 def group_by_week(request):
+    ip = get_remote_addr(request)
+    print(ip)
     lme = LondonMetalExchange.objects.all().order_by('-date')[:50]
 
     context = {
@@ -37,11 +39,7 @@ def api_view(request, date_from=None, date_to=None, limit=100):
 
 
 def api_view_with_token(request, date_from=None, date_to=None, limit=100):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
+    ip = get_remote_addr(request)
 
     try:
         secret_key = request.headers["Token"]
@@ -68,6 +66,8 @@ def api_view_with_token(request, date_from=None, date_to=None, limit=100):
 @xframe_options_exempt
 def chart(request, date_from=None, date_to=None, chart_id='chart_LME', chart_type='line', chart_height=350):
     context = chart_builder(date_from, date_to, chart_id, chart_type, chart_height)
+    ip = get_remote_addr(request)
+    print(ip)
 
     if request.path.split('/')[1] == 'grafico':
         return render(request, 'chart.html', context)
