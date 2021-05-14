@@ -18,13 +18,19 @@ def index(request):
     return render(request, 'index.html', context)
 
 
-def group_by_week(request):
-    ip = get_remote_addr(request)
-    print(ip)
+def group_by_week(request, api_key=None):
     lme = LondonMetalExchange.objects.all().order_by('-date')[:50]
+    if api_key:
+        try:
+            profile = Profile.objects.get(api_secret_key=api_key)
+        except Profile.DoesNotExist:
+            return render(request, 'ops.html')
+    else:
+        profile = None
 
     context = {
         'lme': lme,
+        'profile': profile,
     }
     return render(request, 'group_by_week.html', context)
 
@@ -64,15 +70,12 @@ def api_view_with_token(request, date_from=None, date_to=None, limit=100):
 
 
 @xframe_options_exempt
-def chart(request, date_from=None, date_to=None, chart_id='lme', chart_type='line', chart_height=350, api_key=None):
+def chart(request, date_from=None, date_to=None, chart_id='LME', chart_type='line', chart_height=350, api_key=None):
     ip = get_remote_addr(request)
     origin = request.META.get('REMOTE_ADDR')
     if api_key:
         try:
             profile = Profile.objects.get(api_secret_key=api_key)
-            print(ip)
-            print(origin)
-            print(profile.site_url)
         except Profile.DoesNotExist:
             return render(request, 'ops.html')
     else:
