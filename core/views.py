@@ -66,10 +66,12 @@ def api_view_with_token(request, date_from=None, date_to=None, limit=100):
 @xframe_options_exempt
 def chart(request, date_from=None, date_to=None, chart_id='lme', chart_type='line', chart_height=350, api_key=None):
     ip = get_remote_addr(request)
+    origin = request.META.get('REMOTE_ADDR')
     if api_key:
         try:
             profile = Profile.objects.get(api_secret_key=api_key)
             print(ip)
+            print(origin)
             print(profile.site_url)
         except Profile.DoesNotExist:
             return render(request, 'ops.html')
@@ -80,6 +82,7 @@ def chart(request, date_from=None, date_to=None, chart_id='lme', chart_type='lin
     context["ip"] = ip
     context["token"] = api_key
     context["profile"] = profile
+    context["origin"] = origin
 
     if request.path.split('/')[1] == 'grafico':
         return render(request, 'chart.html', context)
