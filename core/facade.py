@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import pandas as pd
+from django.db.models import Avg
 
 from .models import LondonMetalExchange
 
@@ -141,3 +142,22 @@ def get_remote_addr(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+def get_lme_avg(lme):
+    media_cobre = lme.aggregate(Avg('cobre'))
+    media_zinco = lme.aggregate(Avg('zinco'))
+    media_aluminio = lme.aggregate(Avg('aluminio'))
+    media_chumbo = lme.aggregate(Avg('chumbo'))
+    media_estanho = lme.aggregate(Avg('estanho'))
+    media_niquel = lme.aggregate(Avg('niquel'))
+    media_dolar = lme.aggregate(Avg('dolar'))
+    return {
+        'media_cobre': media_cobre,
+        'media_zinco': media_zinco,
+        'media_aluminio': media_aluminio,
+        'media_chumbo': media_chumbo,
+        'media_estanho': media_estanho,
+        'media_niquel': media_niquel,
+        'media_dolar': media_dolar,
+    }

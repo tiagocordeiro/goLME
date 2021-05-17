@@ -12,9 +12,9 @@
 </head>
 <body>
 
-<table id="lme" class="display" style="width:100%">
+<table id="lme" class="display cotacaolme" style="width:100%">
   <thead>
-  <tr style="text-align: center">
+  <tr class="cotacao-thead" style="text-align: center">
     <th>Data</th>
     <th>Cobre</th>
     <th>Zinco</th>
@@ -28,6 +28,18 @@
   <tbody>
   {% regroup lme by date|date:'W / Y' as dates_items %}
   {% for week in dates_items %}
+    {% if forloop.counter >= 2 %}
+      <tr class="cotacao-thead" style="text-align: center">
+        <th>Data</th>
+        <th>Cobre</th>
+        <th>Zinco</th>
+        <th>Alumínio</th>
+        <th>Chumbo</th>
+        <th>Estanho</th>
+        <th>Níquel</th>
+        <th>Dolar</th>
+      </tr>
+    {% endif %}
     {% for item in week.list %}
       <tr style="text-align: center">
         <td>{{ item.date|date:'d/m/Y' }}</td>
@@ -40,7 +52,7 @@
         <td>{{ item.dolar }}</td>
       </tr>
     {% endfor %}
-    <tr style="text-align: center">
+    <tr class="mediasemana" style="text-align: center">
       <td>Média da semana:<br> {{ week.grouper }}</td>
       <td>{{ week.list|media:"cobre"|floatformat:2 }}</td>
       <td>{{ week.list|media:"zinco"|floatformat:2 }}</td>
@@ -51,6 +63,18 @@
       <td>{{ week.list|media:"dolar"|floatformat:2 }}</td>
     </tr>
   {% endfor %}
+
+  <tr class="mediaperiodohor" style="text-align: center">
+    <td>Média do período:<br> {{ week.grouper }}</td>
+    <td>{{ media_periodo.media_cobre.cobre__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_zinco.zinco__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_aluminio.aluminio__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_chumbo.chumbo__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_estanho.estanho__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_niquel.niquel__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_dolar.dolar__avg|floatformat:2 }}</td>
+  </tr>
+
   </tbody>
   <tfoot>
   <tr style="text-align: center">
