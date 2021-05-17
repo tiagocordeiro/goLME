@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from .facade import get_lme, json_builder, chart_builder, get_remote_addr
+from .facade import get_lme, json_builder, chart_builder, get_remote_addr, get_lme_avg
 from .models import LondonMetalExchange, Profile
 
 
@@ -20,6 +20,8 @@ def index(request):
 
 def group_by_week(request, api_key=None):
     lme = LondonMetalExchange.objects.all().order_by('-date')[:50]
+    media_periodo = get_lme_avg(lme)
+
     if api_key:
         try:
             profile = Profile.objects.get(api_secret_key=api_key)
@@ -31,6 +33,7 @@ def group_by_week(request, api_key=None):
     context = {
         'lme': lme,
         'profile': profile,
+        'media_periodo': media_periodo,
     }
     return render(request, 'group_by_week.html', context)
 
