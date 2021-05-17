@@ -3,10 +3,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('api/', views.api_view, name='api'),
-    path('api/<date_from>/<date_to>', views.api_view, name='api_periodo'),
-    path('api/v2/', views.api_view_with_token, name='api_view_with_token'),
+    path('', views.chart, name='index'),
+    path('api/', views.api_view_with_token, name='api'),
+    path('api/<date_from>/<date_to>', views.api_view_with_token, name='api_periodo'),
+    path('api/v2/', views.api_view, name='api_view_without_token'),
+    path('api/v2/<date_from>/<date_to>', views.api_view, name='api_periodo_without_token'),
     path('chart/', views.chart, name='chart'),
     path('chart/<date_from>/<date_to>', views.chart, name='chart_periodo'),
     path('grafico/', views.chart, name='grafico'),

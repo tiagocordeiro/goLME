@@ -1,6 +1,7 @@
 import datetime
 from datetime import datetime
 
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -38,6 +39,7 @@ def group_by_week(request, api_key=None):
     return render(request, 'group_by_week.html', context)
 
 
+@login_required
 def api_view(request, date_from=None, date_to=None, limit=100):
     lme_prices = get_lme(date_from=date_from, date_to=date_to, limit=limit)
 
@@ -49,6 +51,7 @@ def api_view(request, date_from=None, date_to=None, limit=100):
 
 def api_view_with_token(request, date_from=None, date_to=None, limit=100):
     ip = get_remote_addr(request)
+    origin = request.META.get('REMOTE_ADDR')
 
     try:
         secret_key = request.headers["Token"]
@@ -63,7 +66,11 @@ def api_view_with_token(request, date_from=None, date_to=None, limit=100):
 
         json_data = json_builder(lme_prices)
 
-        data = {"results": json_data, "profile": f"{profile.user}", "remote_addr": f"{ip}"}
+        data = {"results": json_data,
+                "profile": f"{profile.user}",
+                "remote_addr": f"{ip}",
+                "origin": f"{origin}"}
+
         response = JsonResponse(data)
         return response
 
