@@ -1,10 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
-<h1>Não Permitido</h1>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Não permitido{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.1.0/material.min.css">
+{% endblock %}
+
+{% block content %}
+  <main class="main_container">
+    <div>
+      <h1>Ops...</h1>
+      <h2>Não permitido</h2>
+    </div>
+  </main>
+{% endblock content %}

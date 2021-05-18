@@ -16,4 +16,5 @@ urlpatterns = [
     path('periodo/<date_from>/<date_to>', views.periodo, name='periodo'),
     path('cotacao/', views.group_by_week, name='group_by_week'),
     path('cotacao/<str:api_key>/', views.group_by_week, name='group_by_week'),
+    path('about/', views.about, name='about'),
 ]
