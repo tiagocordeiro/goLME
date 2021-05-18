@@ -111,3 +111,7 @@ def periodo(request, date_from, date_to):
         'date_to': date_to,
     }
     return render(request, 'index.html', context)
+
+
+def about(request):
+    return render(request, 'about.html')
