@@ -3,65 +3,193 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>Cotação London Metal Exchange</title>
+
+  <!-- ==== Document Meta ==== -->
+  <meta name="author" content="Tiago Cordeiro">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- ==== Favicon ==== -->
+  <link rel="icon" href="{% static "favicon.png" %}" type="image/png">
+
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="{% static "style.css" %}">
+
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.1.0/material.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.material.min.css">
+
   <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
   <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.19/js/dataTables.material.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
   <script src="https://cdn.datatables.net/plug-ins/1.10.19/sorting/datetime-moment.js"></script>
+  <script src="https://cdn.datatables.net/fixedcolumns/3.2.6/js/dataTables.fixedColumns.min.js"></script>
+
 </head>
 <body>
 
-<table id="lme" class="display" style="width:100%">
-  <thead>
-  <tr>
-    <th>Data</th>
-    <th>Cobre</th>
-    <th>Zinco</th>
-    <th>Alumínio</th>
-    <th>Chumbo</th>
-    <th>Estanho</th>
-    <th>Níquel</th>
-    <th>Dolar</th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for cotacao in lme %}
-    <tr style="text-align: center">
-      <td>{{ cotacao.date|date:'d/m/Y' }}</td>
-      <td>{{ cotacao.cobre }}</td>
-      <td>{{ cotacao.zinco }}</td>
-      <td>{{ cotacao.aluminio }}</td>
-      <td>{{ cotacao.chumbo }}</td>
-      <td>{{ cotacao.estanho }}</td>
-      <td>{{ cotacao.niquel }}</td>
-      <td>{{ cotacao.dolar }}</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-  <tfoot>
-  <tr>
-    <th>Data</th>
-    <th>Cobre</th>
-    <th>Zinco</th>
-    <th>Alumínio</th>
-    <th>Chumbo</th>
-    <th>Estanho</th>
-    <th>Níquel</th>
-    <th>Dolar</th>
-  </tr>
-  </tfoot>
-</table>
+<script src="{% static "highcharts/highcharts.js" %}"></script>
+<script src="{% static "highcharts/modules/series-label.js" %}"></script>
+<script src="{% static "highcharts/js/themes/dark-unica.js" %}"></script>
 
-<p>{{ date_from }} - {{ date_to }}</p>
+{% include 'main-nav.html' %}
+
+<div id="chart_container"></div>
+
+<div>
+  <table id="lme" style="width:100%">
+    <thead>
+    <tr>
+      <th style="background-color: white">Data</th>
+      <th class="no-sort">Cobre</th>
+      <th class="no-sort">Zinco</th>
+      <th class="no-sort">Alumínio</th>
+      <th class="no-sort">Chumbo</th>
+      <th class="no-sort">Estanho</th>
+      <th class="no-sort">Níquel</th>
+      <th class="no-sort" style="background-color: white">Dolar</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cotacao in lme %}
+      <tr style="text-align: center">
+        <td>{{ cotacao.date|date:'d/m/Y' }}</td>
+        <td>{{ cotacao.cobre }}</td>
+        <td>{{ cotacao.zinco }}</td>
+        <td>{{ cotacao.aluminio }}</td>
+        <td>{{ cotacao.chumbo }}</td>
+        <td>{{ cotacao.estanho }}</td>
+        <td>{{ cotacao.niquel }}</td>
+        <td>{{ cotacao.dolar }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+      <th style="background-color: white">Data</th>
+      <th>Cobre</th>
+      <th>Zinco</th>
+      <th>Alumínio</th>
+      <th>Chumbo</th>
+      <th>Estanho</th>
+      <th>Níquel</th>
+      <th style="background-color: white">Dolar</th>
+    </tr>
+    </tfoot>
+  </table>
+</div>
+
+<div class="row" style="padding: 20px 30px;">
+  <div class="col s12">
+    <p style="text-align: center; line-height: 18px;"><strong>Metais</strong> – Os valores da cotação LME referem-se à
+      média entre o CASH BUYER e CASH SELLER &amp; SETTLEMENT em US$/T</p>
+    <p style="text-align: center; line-height: 18px;"><strong>Dólar</strong> – R$/US$ – Esta taxa de câmbio mostra o
+      valor de 1 Dólar Americano em Reais Brasileiros. Esta taxa de câmbio é uma média de taxas de várias fontes.
+      Estas
+      incluem exchanges, corretoras, jornais e fontes de bancos centrais.</p>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+    var chart = Highcharts.chart('chart_container', {
+
+        title: {{ title|safe }},
+
+        subtitle: {
+            text: 'Source: lme.gorilaxpress.com'
+        },
+
+        yAxis: {{ yAxis|safe }},
+
+        xAxis: {{ xAxis|safe }},
+
+        legend: {
+            layout: 'horizontal',
+            align: 'center',
+            verticalAlign: 'bottom'
+        },
+
+        tooltip: {
+            shared: true,
+            crosshairs: true,
+            pointFormat: '{series.name}: <b>{point.y:,.2f}</b><br/>'
+        },
+
+        credits: {
+            enabled: false
+        },
+
+        plotOptions: {
+            series: {
+                events: {
+                    show: function () {
+                        var chart = this.chart,
+                            series = chart.series,
+                            i = series.length,
+                            otherSeries;
+
+                        while (i--) {
+                            otherSeries = series[i];
+                            if (otherSeries != this && otherSeries.visible) {
+                                otherSeries.hide();
+                            }
+                        }
+                    },
+                    legendItemClick: function () {
+                        if (this.visible) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        },
+
+        series: {{ series|safe }},
+
+        responsive: {
+            rules: [{
+                condition: {
+                    maxWidth: 500
+                },
+                chartOptions: {
+                    legend: {
+                        layout: 'horizontal',
+                        align: 'center',
+                        verticalAlign: 'bottom'
+                    }
+                }
+            }]
+        }
+
+    });
+</script>
+
 
 <script type="application/javascript">
     $(document).ready(function () {
-        $.fn.dataTable.moment('DD/MM/YYY');
+        $.fn.dataTable.moment('DD/MM/YYYY');
 
         $('#lme').DataTable({
             "order": [[0, "desc"]],
+            {#scrollY:        "300px",#}
+            scrollX: true,
+            scrollCollapse: true,
+            {#paging:         false,#}
+            fixedColumns: {
+                leftColumns: 1,
+                rightColumns: 1
+            },
+            "searching": false,
+
             "columnDefs": [{
+                "targets": 'no-sort',
+                "orderable": false,
                 "render": function (data) {
                     if (data == "None") {
                         return "-"
@@ -70,10 +198,24 @@
                     }
                 },
                 "targets": [1, 2, 3, 4, 5, 6, 7]
-            }],
+            }]
+
         });
     });
 </script>
 
+<script type="application/javascript">
+    $(document).ready(function () {
+        chart.series[0].hide();
+        chart.series[1].hide();
+        chart.series[2].hide();
+        chart.series[3].hide();
+        chart.series[4].hide();
+        chart.series[5].hide();
+    });
+</script>
+
+
 </body>
+
 </html>

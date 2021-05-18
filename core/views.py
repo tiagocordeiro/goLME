@@ -10,12 +10,9 @@ from .facade import get_lme, json_builder, chart_builder, get_remote_addr, get_l
 from .models import LondonMetalExchange, Profile
 
 
-def index(request):
-    lme = LondonMetalExchange.objects.all().order_by('-date')[:30]
+def index(request, date_from=None, date_to=None, chart_id='LME', chart_type='line', chart_height=350):
+    context = chart_builder(date_from, date_to, chart_id, chart_type, chart_height)
 
-    context = {
-        'lme': lme,
-    }
     return render(request, 'index.html', context)
 
 
