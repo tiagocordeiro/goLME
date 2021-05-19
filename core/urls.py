@@ -17,5 +17,6 @@ urlpatterns = [
     path('cotacao/', views.group_by_week, name='group_by_week'),
     path('cotacao/<str:api_key>/', views.group_by_week, name='group_by_week'),
     path('cotacao/<str:api_key>/json/', views.json_view, name='json_view'),
+    path('cotacao/<str:api_key>/json/v2/', views.json_view_data_in_root, name='json_view_data_in_root'),
     path('about/', views.about, name='about'),
 ]
