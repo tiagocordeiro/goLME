@@ -46,6 +46,21 @@ def api_view(request, date_from=None, date_to=None, limit=100):
     return JsonResponse(data)
 
 
+def json_view(request, date_from=None, date_to=None, limit=100, api_key=None):
+    if api_key:
+        try:
+            Profile.objects.get(api_secret_key=api_key)
+        except Profile.DoesNotExist:
+            return render(request, 'ops.html')
+
+    lme_prices = get_lme(date_from=date_from, date_to=date_to, limit=limit)
+
+    json_data = json_builder(lme_prices)
+
+    data = {"results": json_data}
+    return JsonResponse(data)
+
+
 def api_view_with_token(request, date_from=None, date_to=None, limit=100):
     ip = get_remote_addr(request)
     origin = request.META.get('REMOTE_ADDR')
