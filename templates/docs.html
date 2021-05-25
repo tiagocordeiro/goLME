@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Documentação{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+      #contact-button {
+          position: fixed;
+          display: block;
+          right: 0;
+          bottom: 0;
+          margin-right: 40px;
+          margin-bottom: 40px;
+          z-index: 900;
+      }
+
+      pre {
+          background-color: black;
+          color: darkgray;
+          padding: 10px;
+      }
+  </style>
+{% endblock %}
+
+{% block extra_head_js %}
+{% endblock extra_head_js %}
+
+{% block content %}
+  <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
+    <div class="demo-ribbon"></div>
+    <main class="demo-main mdl-layout__content">
+      <div class="demo-container mdl-grid">
+        <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+        <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+          <div class="demo-crumbs mdl-color-text--grey-500">
+            Cotação LME &gt; Documentação
+          </div>
+          <h3>Como usar</h3>
+          <p>
+            Você pode usar as URLs públicas com o Token. Ex.:
+          </p>
+
+          <ul>
+            <li>/cotacao/<span class="mdl-color-text--grey-500">{api_key}</span>/</li>
+            <li>/cotacao/<span class="mdl-color-text--grey-500">{api_key}</span>/json/</li>
+          </ul>
+
+          <p>
+            ou enviar o Token no cabeçalho da requisição. Ex.:
+          </p>
+
+          <ul>
+            <li>api/</li>
+            <li>api/<span class="mdl-color-text--grey-500">{date_from}</span>/<span class="mdl-color-text--grey-500">{date_to}</span>
+            </li>
+          </ul>
+
+          <pre><code>'Token': 'XXXxxxXXXxxxXXXxxx'</code></pre>
+
+          <p>
+            outros endpoints:
+          </p>
+
+          <ul>
+            <li>chart/</li>
+            <li>chart/<span class="mdl-color-text--grey-500">{date_from}</span>/<span class="mdl-color-text--grey-500">{date_to}</span></li>
+            <li>grafico/</li>
+            <li>grafico/<span class="mdl-color-text--grey-500">{api_key}</span>/</li>
+            <li>grafico/<span class="mdl-color-text--grey-500">{date_from}</span>/<span class="mdl-color-text--grey-500">{date_to}</span></li>
+            <li>periodo/<span class="mdl-color-text--grey-500">{date_from}</span>/<span class="mdl-color-text--grey-500">{date_to}</span></li>
+          </ul>
+
+          <h3>PlugIn para WordPress</h3>
+
+          <p>1. Faça o download do arquivo compactado;</p>
+          <ul class='mdl-list'>
+            <li class="mdl-list__item">1.1 – Você pode subir pelo seu painel do WordPress. Vá em: Plugins -> Adicionar Novo -> Fazer Upload do Plugin (compactado);</li>
+            <li class="mdl-list__item">1.2 – Você pode subir pelo FTP. Descompacte o plugin e envie a pasta do Plugin Cotação LME para o diretório “Plugins”;</li>
+          </ul>
+
+          <p>2. Ative o Plugin em seu painel no WordPress</p>
+          <ul class='mdl-list'>
+            <li class="mdl-list__item">2.1 - Adicione o Token nas configurações do plugin.</li>
+            <li class="mdl-list__item">2.2 - Adicione o shortcode <span class="mdl-color-text--grey-500">&nbsp; [lme] &nbsp;</span> em qualquer página.</li>
+          </ul>
+        </div>
+      </div>
+      <footer class="demo-footer mdl-mini-footer">
+        <div class="mdl-mini-footer--left-section">
+          <ul class="mdl-mini-footer--link-list">
+            <li><a href="#">Help</a></li>
+            <li><a href="#">Privacy and Terms</a></li>
+            <li><a href="#">User Agreement</a></li>
+          </ul>
+        </div>
+      </footer>
+    </main>
+  </div>
+  <a href="#" id="contact-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">Contato</a>
+
+{% endblock content %}
