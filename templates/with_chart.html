@@ -33,6 +33,35 @@
       table {
           font-family: "Roboto", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", Verdana, Arial, sans-serif;
       }
+
+      .form-group {
+          display: flex;
+          padding: 10px;
+      }
+
+      .form-group input {
+          flex: 1;
+      }
+
+      .form-group label {
+          padding: 5px;
+      }
+      /* Add responsiveness - display the form controls vertically instead of horizontally on screens that are less than 800px wide */
+      @media (max-width: 800px) {
+          .form-group input {
+              margin: 10px 0;
+          }
+
+          .form-group label {
+              padding: 5px 0 0;
+          }
+
+          .form-group {
+              flex-direction: column;
+              align-items: stretch;
+          }
+      }
+
   </style>
 </head>
 <body>
@@ -46,6 +75,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="{% static "highcharts/js/themes/dark-unica.js" %}"></script>
 
 <div id="chart_container"></div>
+
+<div>
+  <form class="form-group">
+    <label for="data-inicio">Data inicial:</label>
+    <input class="datepicker" type="date" id="data-inicio" name="data-inicio" min="2017-01-01" placeholder="Data inicial" required>
+    <label for="data-final">Data final:</label>
+    <input type="date" id="data-final" name="data-final" required>
+    <input type="submit">
+  </form>
+</div>
 
 <div>
   <table id="lme" class="display" style="width:100%">
