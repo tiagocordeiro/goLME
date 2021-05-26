@@ -19,7 +19,7 @@ def index(request, date_from=None, date_to=None, chart_id='LME', chart_type='lin
 def app_view(request, date_from=None, date_to=None, chart_id='LME', chart_type='line', chart_height=350):
     context = chart_builder(date_from, date_to, chart_id, chart_type, chart_height)
 
-    return render(request, 'with_chart.html', context)
+    return render(request, 'app.html', context)
 
 
 def group_by_week(request, api_key=None):
