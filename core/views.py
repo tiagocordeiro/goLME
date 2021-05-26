@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from .facade import get_lme, json_builder, chart_builder, get_remote_addr, get_lme_avg
@@ -122,6 +122,16 @@ def chart(request, date_from=None, date_to=None, chart_id='LME', chart_type='lin
             return render(request, 'ops.html')
     else:
         profile = None
+
+    data_inicio = request.GET.get('data-inicio', False)
+    data_final = request.GET.get('data-final', False)
+
+    if data_inicio and data_final:
+        data_inicio = '-'.join(data_inicio.split('-')[::-1])
+        data_final = '-'.join(data_final.split('-')[::-1])
+        url_with_dates = f'/chart/{data_inicio}/{data_final}'
+
+        return redirect(url_with_dates)
 
     context = chart_builder(date_from, date_to, chart_id, chart_type, chart_height)
     context["ip"] = ip
