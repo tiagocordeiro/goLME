@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from .facade import get_lme, json_builder, chart_builder, get_remote_addr, get_lme_avg
+from .facade import get_lme, json_builder, chart_builder, get_remote_addr, get_lme_avg, json_chart_builder
 from .models import LondonMetalExchange, Profile
 
 
@@ -79,6 +79,26 @@ def json_view_data_in_root(request, date_from=None, date_to=None, limit=100, api
     json_data = json_builder(lme_prices)
 
     return JsonResponse(json_data, safe=False)
+
+
+def json_for_chart(request, date_from=None, date_to=None, chart_id='LME', chart_type='line', chart_height=350):
+    try:
+        secret_key = request.headers["Token"]
+
+    except KeyError:
+        response = JsonResponse({"status": "false", "message": "Token não informado"}, status=500)
+        return response
+
+    try:
+        Profile.objects.get(api_secret_key=secret_key)
+        chart_data = json_chart_builder(date_from, date_to, chart_id, chart_type, chart_height)
+
+        response = JsonResponse(chart_data)
+        return response
+
+    except Profile.DoesNotExist:
+        response = JsonResponse({"status": "false", "message": "Token inválido"}, status=500)
+        return response
 
 
 def api_view_with_token(request, date_from=None, date_to=None, limit=100):
