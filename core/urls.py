@@ -11,6 +11,7 @@ urlpatterns = [
     path('api/v2/<date_from>/<date_to>', views.api_view, name='api_periodo_without_token'),
     path('chart/', views.chart, name='chart'),
     path('chart/<date_from>/<date_to>', views.chart, name='chart_periodo'),
+    path('chart/json/', views.json_for_chart, name='json_for_chart'),
     path('grafico/', views.chart, name='grafico'),
     path('grafico/<str:api_key>/', views.chart, name='grafico'),
     path('grafico/<date_from>/<date_to>', views.chart, name='grafico_periodo'),
