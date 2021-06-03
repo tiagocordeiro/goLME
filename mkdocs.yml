@@ -1,0 +1,5 @@
+site_name: Cotação London Metal Exchange
+nav:
+    - Home: index.md
+    - About: about.md
+theme: readthedocs
