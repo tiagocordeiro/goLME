@@ -67,6 +67,15 @@ def json_view(request, date_from=None, date_to=None, limit=100, api_key=None):
     return JsonResponse(data)
 
 
+def summary(request, date_from=None, date_to=None, limit=100):
+    lme_prices = get_lme(date_from=date_from, date_to=date_to, limit=limit)
+
+    json_data = json_builder(lme_prices)
+
+    data = {"result": json_data[-1]}
+    return JsonResponse(data)
+
+
 def json_view_data_in_root(request, date_from=None, date_to=None, limit=100, api_key=None):
     if api_key:
         try:
