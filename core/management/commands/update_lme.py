@@ -88,8 +88,9 @@ def update_dolar_exchange(start_date='01-04-2021', end_date=None):  # 01-03-2012
         for item in data_indexed:
             date, dolar = item
             obj = LondonMetalExchange.objects.filter(date=date).first()
-            obj.dolar = dolar
-            obj.save()
+            if obj:
+                obj.dolar = dolar
+                obj.save()
 
 
 class Command(BaseCommand):
