@@ -1,0 +1,96 @@
+{% extends "base_accounts.html" %}
+{% load static %}
+
+{% block content %}
+<div class="wrapper">
+    <!-- Login Page Start -->
+    <div class="m-account-w" data-bg-img="{% static 'images/background.jpg' %}">
+        <div class="m-account">
+            <div class="row no-gutters">
+                <div class="col-md-6">
+                    <!-- Login Content Start -->
+                    <div class="m-account--content-w" {# data-bg-img="{% static 'assets/img/account/content-bg.jpg' %}" #}>
+                        <div class="m-account--content">
+
+                            {% if form.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                  Seu usuário e senha não correspondem. Por favor, tente novamente.
+                                </div>
+                            {% endif %}
+
+                            {% if next %}
+                                {% if user.is_authenticated %}
+                                    <div class="alert alert-primary" role="alert">
+                                        Sua conta não tem acesso a esta página. Para proseguir, acesse com outra conta.
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-secondary" role="alert">
+                                        Por favor, faça login para visualizar esta página.
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
+                            <h2 class="h2">Área restrita</h2>
+                            <p>Se você é um parceiro, solicite o seu login.</p>
+
+                        </div>
+                    </div>
+                    <!-- Login Content End -->
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Login Form Start -->
+                    <div class="m-account--form-w">
+                        <div class="m-account--form">
+                            <!-- Logo Start -->
+                            <div class="logo">
+                                <img src="{% static 'images/goLME-logo.png' %}" alt="">
+                            </div>
+                            <!-- Logo End -->
+
+                            <form action="{% url 'login' %}" method="post">
+                                {% csrf_token %}
+{#                                <label class="m-account--title">Login to your account</label>#}
+                                <label class="m-account--title">Faça login na sua conta</label>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+
+                                        <input type="text" name="username" autofocus="" maxlength="254" placeholder="Username" class="form-control" autocomplete="off" required="" id="id_username">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <i class="fas fa-key"></i>
+                                        </div>
+
+                                        <input type="password" name="password" placeholder="Password" class="form-control" autocomplete="off" required="" id="id_password">
+                                    </div>
+                                </div>
+
+                                <div class="m-account--actions">
+                                    <a href="{% url 'password_reset' %}" class="btn-link">Esqueceu a senha?</a>
+                                    <input type="hidden" name="next" value="{{ next }}" />
+
+                                    <button type="submit" value="login" class="btn btn-rounded btn-primary" name="login">Login</button>
+                                </div>
+
+                                <div class="m-account--footer">
+                                    <p>&copy; 2021 GorilaXpress</p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Login Form End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Login Page End -->
+</div>
+{% endblock %}

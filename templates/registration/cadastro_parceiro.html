@@ -1,0 +1,127 @@
+{% extends "base_accounts.html" %}
+{% load static %}
+
+{% block content %}
+<div class="wrapper">
+    <!-- Login Page Start -->
+    <div class="m-account-w" data-bg-img="{% static 'images/decor-bg.jpg' %}">
+        <div class="m-account">
+            <div class="row no-gutters">
+                <div class="col-md-6">
+                    <!-- Login Content Start -->
+                    <div class="m-account--content-w" {# data-bg-img="{% static 'assets/img/account/content-bg.jpg' %}" #}>
+                        <div class="m-account--content">
+
+                            {% if form.username.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {% for error in form.username.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% if form.email.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {% for error in form.email.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% if form.password1.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {% for error in form.password1.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            {% if form.password2.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {% for error in form.password2.errors %}
+                                      {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+
+                            <h2 class="h2">Já possui um conta?</h2>
+                            <p>Acesse o sistema.</p>
+                            <a href="{% url 'login' %}" class="btn btn-rounded">Acessar</a>
+
+                        </div>
+                    </div>
+                    <!-- Login Content End -->
+                </div>
+
+                <div class="col-md-6">
+                    <!-- Login Form Start -->
+                    <div class="m-account--form-w">
+                        <div class="m-account--form">
+                            <!-- Logo Start -->
+                            <div class="logo">
+                                <img src="{% static 'images/zumaq-logo.png' %}" alt="">
+                            </div>
+                            <!-- Logo End -->
+
+                            <form method="post">
+                                {% csrf_token %}
+                                <label class="m-account--title">Registrar</label>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <input type="text" name="username" autofocus="" maxlength="254" placeholder="Usuário" class="form-control" autocomplete="off" required="" id="id_username">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+
+                                        <input type="email" name="email" autofocus="" maxlength="254" placeholder="Email" class="form-control" autocomplete="off" required="" id="id_email">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <i class="fas fa-key"></i>
+                                        </div>
+
+                                        <input type="password" name="password1" placeholder="Senha" class="form-control" autocomplete="off" required="" id="id_password1">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <i class="fas fa-key"></i>
+                                        </div>
+
+                                        <input type="password" name="password2" placeholder="Repita a senha" class="form-control" autocomplete="off" required="" id="id_password2">
+                                    </div>
+                                </div>
+
+                                <div class="m-account--actions">
+                                    <button type="submit" value="signup" class="btn btn-rounded btn-primary" name="signup">Cadastrar</button>
+                                </div>
+
+                                <div class="m-account--footer">
+                                    <p>&copy; 2018 Mulher Gorila</p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Login Form End -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Login Page End -->
+</div>
+{% endblock %}

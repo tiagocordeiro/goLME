@@ -1,0 +1,38 @@
+{% extends "base_accounts.html" %}
+{% load static %}
+
+{% block content %}
+<div class="wrapper">
+    <!-- Logged out Page Start -->
+    <div class="m-account-w" data-bg-img="{% static 'images/background.jpg' %}">
+        <div class="m-account">
+            <div class="row no-gutters">
+                <div class="col-md-6">
+                    <!-- Logged out Content Start -->
+                    <div class="m-account--content-w">
+                        <div class="m-account--content">
+                            <h2 class="h2">Desconectado</h2>
+                            <p>Você desconectou da sua conta.</p>
+                            <a href="{% url 'login'%}" class="btn btn-rounded">Login</a>
+                        </div>
+                    </div>
+                    <!-- Logged out Content End -->
+                </div>
+
+                <div class="col-md-6">
+                    <div class="m-account--form-w">
+                        <div class="m-account--form">
+                            <!-- Logo Start -->
+                            <div class="logo" style="margin: 0px;">
+                                <img src="{% static 'images/goLME-logo.png' %}" alt="">
+                            </div>
+                            <!-- Logo End -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Logged out Page End -->
+</div>
+{% endblock %}

@@ -2,11 +2,14 @@ import datetime
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.forms.models import inlineformset_factory
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from .facade import get_lme, json_builder, chart_builder, get_remote_addr, get_lme_avg, json_chart_builder
+from .forms import ProfileForm
 from .models import LondonMetalExchange, Profile
 
 
@@ -193,3 +196,37 @@ def about(request):
 
 def docs(request):
     return render(request, 'docs.html')
+
+
+@login_required
+def profile_update(request):
+    try:
+        usuario = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        usuario = None
+
+    user = User.objects.get(username=request.user)
+
+    profile_inline_formset = inlineformset_factory(User, Profile, fields=('avatar',))
+
+    if request.method == 'POST':
+        form = ProfileForm(data=request.POST, instance=request.user)
+        formset = profile_inline_formset(request.POST, request.FILES, instance=request.user)
+
+        if form.is_valid():
+            perfil = form.save(commit=False)
+            formset = profile_inline_formset(request.POST, request.FILES, instance=perfil)
+
+            if formset.is_valid():
+                perfil.save()
+                formset.save()
+                return redirect('profile_update')
+
+    else:
+        form = ProfileForm(instance=request.user)
+        formset = profile_inline_formset(instance=request.user)
+
+    return render(request, 'profile_update.html', {'form': form,
+                                                   'formset': formset,
+                                                   'usuario': usuario,
+                                                   'user': user, })
