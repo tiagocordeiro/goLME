@@ -1,0 +1,169 @@
+{% load static %}
+{% load core_extras %}
+<!-- Navbar Start -->
+<header class="navbar navbar-fixed">
+  <!-- Navbar Header Start -->
+  <div class="navbar--header">
+    <!-- Logo Start -->
+    <a href="{% url 'index' %}" class="logo">
+      <img src="{% static "images/goLME-logo.png" %}" alt="CNC Zumaq">
+    </a>
+    <!-- Logo End -->
+
+    <!-- Sidebar Toggle Button Start -->
+    <a href="#" class="navbar--btn" data-toggle="sidebar" title="Toggle Sidebar">
+      <i class="fa fa-bars"></i>
+    </a>
+    <!-- Sidebar Toggle Button End -->
+  </div>
+  <!-- Navbar Header End -->
+
+  <!-- Sidebar Toggle Button Start -->
+  <a href="#" class="navbar--btn" data-toggle="sidebar" title="Toggle Sidebar">
+    <i class="fa fa-bars"></i>
+  </a>
+  <!-- Sidebar Toggle Button End -->
+
+  <div class="navbar--nav ml-auto">
+    <ul class="nav">
+      {% if request.user|has_group:"Parceiro" and pedido_itens_qt != 0 %}
+        <li class="nav-item">
+          <a href="{% url 'pedido_aberto' %}" class="nav-link">
+            <i class="fa fa-shopping-cart"></i>
+            <span class="badge text-white bg-blue">{{ pedido_itens_qt }}</span>
+          </a>
+        </li>
+      {% endif %}
+      <!-- Nav User Start -->
+      <li class="nav-item dropdown nav--user online">
+        <a href="#" class="nav-link" data-toggle="dropdown">
+          {% if usuario is None %}
+            <img src="{% static 'assets/img/avatars/01_150x150.png' %}" alt="" class="rounded-circle">
+          {% else %}
+            <img src="{{ usuario.avatar.url }}" alt="" class="rounded-circle" style="object-fit: cover; height: 50px;">
+          {% endif %}
+          {% if user.first_name %}
+            <span>{{ user.first_name|safe }}</span>
+          {% else %}
+            <span>{{ user.username }}</span>
+          {% endif %}
+
+          <i class="fa fa-angle-down"></i>
+        </a>
+
+        <ul class="dropdown-menu">
+          <li><a href="{% url "profile_update" %}"><i class="far fa-user"></i>Perfil</a></li>
+          {#                    <li><a href="#"><i class="far fa-envelope"></i>Inbox</a></li>#}
+          {% if user.is_superuser %}
+            {#                    <li><a href="{% url "company" %}"><i class="fa fa-cog"></i>Configurações</a></li>#}
+          {% endif %}
+          <li class="dropdown-divider"></li>
+          <li><a href="{% url 'logout' %}"><i class="fa fa-power-off"></i>Sair</a></li>
+        </ul>
+      </li>
+      <!-- Nav User End -->
+    </ul>
+  </div>
+</header>
+<!-- Navbar End -->
+
+<!-- Sidebar Start -->
+<aside class="sidebar" data-trigger="scrollbar">
+  <!-- Sidebar Profile Start -->
+  <div class="sidebar--profile">
+    <div class="profile--img">
+      <a href="{% url "profile_update" %}">
+        {% if usuario is None %}
+          <img src="{% static 'assets/img/avatars/01_150x150.png' %}" alt="" class="rounded-circle">
+        {% else %}
+          <img src="{{ usuario.avatar.url }}" alt="" class="rounded-circle" style="object-fit: cover; height: 80px;">
+        {% endif %}
+      </a>
+    </div>
+
+    <div class="profile--name">
+      {% if user.first_name %}
+        <a href="{% url "profile_update" %}" class="btn-link">{{ user.first_name|safe }}</a>
+      {% else %}
+        <a href="{% url "profile_update" %}" class="btn-link">{{ user.username|safe }}</a>
+      {% endif %}
+    </div>
+
+    <div class="profile--nav">
+      <ul class="nav">
+        <li class="nav-item">
+          <a href="{% url "profile_update" %}" class="nav-link" title="Perfil do usuário">
+            <i class="fa fa-user"></i>
+          </a>
+        </li>
+        {#                <li class="nav-item">#}
+        {#                    <a href="#" class="nav-link" title="Messages">#}
+        {#                        <i class="fa fa-envelope"></i>#}
+        {#                    </a>#}
+        {#                </li>#}
+        <li class="nav-item">
+          <a href="{% url 'logout' %}" class="nav-link" title="Sair">
+            <i class="fa fa-sign-out-alt"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- Sidebar Profile End -->
+
+  <!-- Sidebar Navigation Start -->
+  <div class="sidebar--nav">
+    <ul>
+      <li>
+        <ul>
+          <li class="active">
+            <a href="{% url 'index' %}">
+              <i class="fa fa-home"></i>
+              <span>Home</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">Documentação</a>
+
+        <ul>
+          <li>
+            <a href="{% url 'docs' %}">
+              <i class="fa fa-th-list"></i>
+              <span>Ajuda</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://tiagocordeiro.github.io/goLME/" target="_blank">
+              <i class="fa fa-th-list"></i>
+              <span>Dev docs</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <a href="#">Downloads</a>
+
+        <ul>
+          <li>
+            <a href="#">
+              <i class="fa fa-tasks"></i>
+              <span>Plugin WordPress</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="fa fa-tasks"></i>
+              <span>Modelo HTML</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <!-- Sidebar Navigation End -->
+</aside>
+<!-- Sidebar End -->
