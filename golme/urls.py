@@ -16,14 +16,21 @@ Including another URLconf
 from django.conf.urls import include
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import path
 
+from core.sitemaps import StaticViewSitemap
 from golme import settings
 
 admin.site.site_header = 'LME'
 
+sitemaps = {
+    'static': StaticViewSitemap
+}
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}),
     path('', include('core.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
