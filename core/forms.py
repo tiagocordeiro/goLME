@@ -1,5 +1,6 @@
-from django.forms import ModelForm, TextInput, EmailInput
 from django.contrib.auth.models import User
+from django.forms import EmailInput, ModelForm, TextInput
+
 from .models import Profile
 
 
