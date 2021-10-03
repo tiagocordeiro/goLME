@@ -5,10 +5,17 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.forms.models import inlineformset_factory
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-from .facade import get_lme, json_builder, chart_builder, get_remote_addr, get_lme_avg, json_chart_builder
+from .facade import (
+    chart_builder,
+    get_lme,
+    get_lme_avg,
+    get_remote_addr,
+    json_builder,
+    json_chart_builder
+)
 from .forms import ProfileForm
 from .models import LondonMetalExchange, Profile
 
