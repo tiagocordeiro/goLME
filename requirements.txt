@@ -2,7 +2,7 @@
 django==3.2.7
 
 # Decouple
-python-decouple==3.4
+python-decouple==3.5
 
 # Quandl
 Quandl==3.6.1
