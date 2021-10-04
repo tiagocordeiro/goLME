@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 import requests
 from bs4 import BeautifulSoup
+from decouple import config
 
 
 def clean_str(text):
@@ -52,7 +53,7 @@ def parse_date(date_str):
 
 
 def get_data_exchange():
-    URL = "https://maxiligas.com.br/cotacao-lme-london-metal-exchange-fg/cotacao-lme-london-metal-exchange"  # noqa E501
+    URL = config('LME_SOURCE')  # noqa E501
     page = requests.get(URL)
     soup = BeautifulSoup(page.content, "html.parser")
     results = soup.find(id="tablelme")

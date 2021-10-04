@@ -25,6 +25,7 @@ EMAIL_HOST_USER=
 EMAIL_HOST_PASSWORD=
 # Quandl API Key
 QUANDL_KEY=
+LME_SOURCE=
 """.strip() % get_random_string(50, chars)
 
 # Writing our configuration file to '.env'
