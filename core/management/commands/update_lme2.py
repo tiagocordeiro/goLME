@@ -30,7 +30,7 @@ def update_metal_exchange():
 
 
 class Command(BaseCommand):
-    help = '''Atualiza cotações lme a partir de maxiligas'''
+    help = '''Atualiza cotações lme no banco de dados'''
 
     def handle(self, *args, **options):
         update_metal_exchange()
