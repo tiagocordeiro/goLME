@@ -10,6 +10,14 @@ def clean_str(text):
     Limpa a string e transforma em formato numérico.
     """
     value = str(text).replace("\n", "").replace("\t", "")
+    return value.replace(",", "")
+
+
+def clean_usd_str(text):
+    """
+    Limpa a string USD e transforma em formato numérico.
+    """
+    value = str(text).replace("\n", "").replace("\t", "")
     return value.replace(".", "").replace(",", ".")
 
 
@@ -29,7 +37,7 @@ def search_for_previous_value(_dict, dict_prices, field_list):
 
 def parse_date(date_str):
     """
-    Recebe no padrão 01/Jan/21
+    Recebe no padrão 01/Jan
     """
     _date = date_str.split("/")
 
@@ -48,7 +56,8 @@ def parse_date(date_str):
         "Dec": "12"
     }
 
-    data_frm_str = f"{_date[0]}/{meses[_date[1]]}/{_date[2]}"
+    ano = datetime.now().year
+    data_frm_str = f"{_date[0]}/{meses[_date[1]]}/{str(ano)[2:]}"
     return datetime.strptime(data_frm_str, "%d/%m/%y")
 
 
@@ -56,29 +65,30 @@ def get_data_exchange():
     URL = config('LME_SOURCE')  # noqa E501
     page = requests.get(URL)
     soup = BeautifulSoup(page.content, "html.parser")
-    results = soup.find(id="tablelme")
-    prices = results.find_all("tr")
+    results = soup.find(id="boxtabela")
+    tabela = results.find("tbody")
+    prices = tabela.find_all("tr")
     dict_prices = []
 
     for row in prices:
         row_data = row.find_all("td")
         data = row_data[0]
-        dolar = row_data[1]
-        cobre = row_data[2]
+        cobre = row_data[1]
+        zinco = row_data[2]
         aluminio = row_data[3]
         chumbo = row_data[4]
         estanho = row_data[5]
         niquel = row_data[6]
-        zinco = row_data[7]
+        dolar = row_data[7]
 
         data_str = clean_str(data.text)
-        dolar_str = clean_str(dolar.text)
         cobre_str = clean_str(cobre.text)
+        zinco_str = clean_str(zinco.text)
         aluminio_str = clean_str(aluminio.text)
         chumbo_str = clean_str(chumbo.text)
         estanho_str = clean_str(estanho.text)
         niquel_str = clean_str(niquel.text)
-        zinco_str = clean_str(zinco.text)
+        dolar_str = clean_usd_str(dolar.text)
 
         if data_str.startswith("Média") or data_str.startswith("Data"):
             pass
