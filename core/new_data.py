@@ -113,10 +113,10 @@ def get_data_exchange():
             # Procura pelo campos sem valor numérico campo a campo.
             field_list = []
             for item in _dict.items():
-                if item[1] == "Unofficial" or item[1] == "N/C":
+                if item[1] == "Unofficial" or item[1] == "N/C" or item[1] == "feriado":
                     field_list.append(item[0])
 
-            if "Unofficial" in _dict.values() or "N/C" in _dict.values():
+            if "Unofficial" in _dict.values() or "N/C" in _dict.values() or "feriado" in _dict.values():
                 new_dict = search_for_previous_value(_dict, dict_prices, field_list)  # noqa E501
                 dict_prices.append(new_dict)
             else:
