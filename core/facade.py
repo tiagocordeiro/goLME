@@ -77,7 +77,7 @@ def chart_builder(date_from=None, date_to=None, chart_id='chart_LME', chart_type
 
     lme_last = LondonMetalExchange.objects.values('date').last()
 
-    lme_periodo = LondonMetalExchange.objects.filter(date__range=(date_from, date_to))
+    lme_periodo = LondonMetalExchange.objects.filter(date__range=(date_from, date_to)).order_by('date')
 
     df = pd.DataFrame(
         list(lme_periodo.values('date', 'cobre', 'zinco', 'aluminio',
@@ -151,7 +151,7 @@ def json_chart_builder(date_from=None, date_to=None, chart_id='chart_LME', chart
 
     lme_last = LondonMetalExchange.objects.values('date').last()
 
-    lme_periodo = LondonMetalExchange.objects.filter(date__range=(date_from, date_to))
+    lme_periodo = LondonMetalExchange.objects.filter(date__range=(date_from, date_to)).order_by('date')
 
     df = pd.DataFrame(
         list(lme_periodo.values('date', 'cobre', 'zinco', 'aluminio',
