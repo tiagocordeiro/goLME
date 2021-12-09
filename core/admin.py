@@ -2,11 +2,15 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
-from .models import Profile, TimeSerie
+from .models import Profile, TimeSerie, LondonMetalExchange
 
 
 class TimeSerieAdmin(admin.ModelAdmin):
     list_display = ('name', 'code')
+
+
+class LondonMetalExchangeAdmin(admin.ModelAdmin):
+    list_display = ("date", "cobre", "zinco", "aluminio", "chumbo", "estanho", "niquel", "dolar")
 
 
 class ProfileInline(admin.StackedInline):
@@ -28,3 +32,4 @@ class CustomUserAdmin(UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(TimeSerie, TimeSerieAdmin)
+admin.site.register(LondonMetalExchange, LondonMetalExchangeAdmin)

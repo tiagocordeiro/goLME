@@ -53,7 +53,7 @@ def parse_date(date_str):
         "Set": "09",
         "Out": "10",
         "Nov": "11",
-        "Dec": "12"
+        "Dez": "12"
     }
 
     ano = datetime.now().year
