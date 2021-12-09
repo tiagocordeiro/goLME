@@ -11,6 +11,7 @@ class TimeSerieAdmin(admin.ModelAdmin):
 
 class LondonMetalExchangeAdmin(admin.ModelAdmin):
     list_display = ("date", "cobre", "zinco", "aluminio", "chumbo", "estanho", "niquel", "dolar")
+    search_fields = ("date",)
 
 
 class ProfileInline(admin.StackedInline):
