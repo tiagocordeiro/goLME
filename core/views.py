@@ -214,7 +214,7 @@ def profile_update(request):
 
     user = User.objects.get(username=request.user)
 
-    profile_inline_formset = inlineformset_factory(User, Profile, fields=('avatar',))
+    profile_inline_formset = inlineformset_factory(User, Profile, fields=('avatar', ), can_delete=False)
 
     if request.method == 'POST':
         form = ProfileForm(data=request.POST, instance=request.user)
