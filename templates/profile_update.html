@@ -76,11 +76,11 @@
               </div>
               <div id="avatar-col" class="col-md-6 col-sm-12">
                 {{ formset.management_form }}
-                {{ formset.as_p }}
+                {{ formset }}
               </div>
             </div>
             {% if user.profile.api_secret_key and user.profile.api_view %}
-              <div class="row">
+              <div class="row mt-3">
                 <div class="col-md-12 col-sm-12">
                   <details class="details-api-token">
                     <summary>API Token</summary>
@@ -145,21 +145,21 @@
   </section>
 {% endblock %}
 
-{% block extra_scripts %}
-  <script>
-      // window.onload
-      window.onload = function () {
-          cumstomAvatarFilePick();
-      };
-
-      function cumstomAvatarFilePick() {
-          var avatar = document.querySelector("#avatar-col > p:nth-child(9)").innerHTML;
-          var res = avatar.replace(avatar, '<span class="label-text"><label for="id_profile-0-avatar">Foto do perfil</label></span>\n' +
-              '<label for="id_profile-0-avatar" class="custom-file">\n' +
-              '  <input type="file" name="profile-0-avatar" accept="image/*" id="id_profile-0-avatar" class="custom-file-input">\n' +
-              '  <span class="custom-file-label">Escolher arquivo</span>\n' +
-              '</label>');
-          document.querySelector("#avatar-col > p:nth-child(9)").innerHTML = res;
-      }
-  </script>
-{% endblock %}
+{#{% block extra_scripts %}#}
+{#  <script>#}
+{#      // window.onload#}
+{#      window.onload = function () {#}
+{#          cumstomAvatarFilePick();#}
+{#      };#}
+{##}
+{#      function cumstomAvatarFilePick() {#}
+{#          var avatar = document.querySelector("#avatar-col > p:nth-child(9)").innerHTML;#}
+{#          var res = avatar.replace(avatar, '<span class="label-text"><label for="id_profile-0-avatar">Foto do perfil</label></span>\n' +#}
+{#              '<label for="id_profile-0-avatar" class="custom-file">\n' +#}
+{#              '  <input type="file" name="profile-0-avatar" accept="image/*" id="id_profile-0-avatar" class="custom-file-input">\n' +#}
+{#              '  <span class="custom-file-label">Escolher arquivo</span>\n' +#}
+{#              '</label>');#}
+{#          document.querySelector("#avatar-col > p:nth-child(9)").innerHTML = res;#}
+{#      }#}
+{#  </script>#}
+{#{% endblock %}#}
