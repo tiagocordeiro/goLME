@@ -32,7 +32,6 @@ def app_view(request, date_from=None, date_to=None, chart_id='LME', chart_type='
     return render(request, 'app.html', context)
 
 
-@xframe_options_exempt
 def group_by_week(request, api_key=None):
     lme = LondonMetalExchange.objects.all().order_by('-date')[:50]
     media_periodo = get_lme_avg(lme)
@@ -51,6 +50,27 @@ def group_by_week(request, api_key=None):
         'media_periodo': media_periodo,
     }
     return render(request, 'group_by_week.html', context)
+
+
+@xframe_options_exempt
+def group_by_week_iframe(request, api_key=None):
+    lme = LondonMetalExchange.objects.all().order_by('-date')[:25]
+    media_periodo = get_lme_avg(lme)
+
+    if api_key:
+        try:
+            profile = Profile.objects.get(api_secret_key=api_key)
+        except Profile.DoesNotExist:
+            return render(request, 'ops.html')
+    else:
+        profile = None
+
+    context = {
+        'lme': lme,
+        'profile': profile,
+        'media_periodo': media_periodo,
+    }
+    return render(request, 'group_by_week_iframe.html', context)
 
 
 @login_required

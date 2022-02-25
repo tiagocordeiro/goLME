@@ -1,0 +1,139 @@
+{% load humanize %}
+{% load core_extras %}
+<style>
+    table.dataframe, .dataframe th, .dataframe td {
+        border: none;
+        border-bottom: 1px solid #d1d1d1;
+        border-collapse: collapse;
+        text-align: left;
+        padding: 10px;
+        margin-bottom: 0px !important;
+        /*font-size: 0.9em;*/
+    }
+
+    thead tr th:first-child, tbody tr td:first-child {
+        width: 150px;
+        min-width: 10em;
+        /* 	  max-width: 10em; */
+        /* 	  word-break: break-all; */
+    }
+
+    .cotacaolme th {
+        background-color: #D4C97E;
+        color: black;
+    }
+
+    .cotacaolme thead tr:nth-of-type(2) {
+        display: none;
+    }
+
+    tr:nth-child(odd) {
+        background-color: #eee;
+    }
+
+    tr:nth-child(even) {
+        background-color: #fff;
+    }
+
+    tr:hover {
+        background-color: #e0e1b7;
+    }
+
+    .mediasemana th {
+        background-color: #FAF9AD;
+        border-bottom: 1px solid #fafbdd;
+        color: black;
+    }
+
+    .mediasemana td {
+        background-color: #FAF9AD;
+        border-bottom: 1px solid #fafbdd;
+    }
+
+    .mediaperiodohor th {
+        background-color: #e0e1b7;
+        border-bottom: 1px solid #e0e1b7;
+    }
+
+    .mediaperiodohor td {
+        background-color: #e0e1b7;
+        border-bottom: 1px solid #e0e1b7;
+    }
+</style>
+<table id="lme" class="display cotacaolme" style="width:100%">
+  <thead>
+  <tr class="cotacao-thead" style="text-align: center">
+    <th>Data</th>
+    <th>Cobre</th>
+    <th>Zinco</th>
+    <th>Alumínio</th>
+    <th>Chumbo</th>
+    <th>Estanho</th>
+    <th>Níquel</th>
+    <th>Dolar</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% regroup lme by date|date:'W / Y' as dates_items %}
+  {% for week in dates_items %}
+    {% if forloop.counter >= 2 %}
+      <tr class="cotacao-thead" style="text-align: center">
+        <th>Data</th>
+        <th>Cobre</th>
+        <th>Zinco</th>
+        <th>Alumínio</th>
+        <th>Chumbo</th>
+        <th>Estanho</th>
+        <th>Níquel</th>
+        <th>Dolar</th>
+      </tr>
+    {% endif %}
+    {% for item in week.list %}
+      <tr style="text-align: center">
+        <td>{{ item.date|date:'d/m/Y' }}</td>
+        <td>{{ item.cobre }}</td>
+        <td>{{ item.zinco }}</td>
+        <td>{{ item.aluminio }}</td>
+        <td>{{ item.chumbo }}</td>
+        <td>{{ item.estanho }}</td>
+        <td>{{ item.niquel }}</td>
+        <td>{{ item.dolar }}</td>
+      </tr>
+    {% endfor %}
+    <tr class="mediasemana" style="text-align: center">
+      <td>Média da semana:<br> {{ week.grouper }}</td>
+      <td>{{ week.list|media:"cobre"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"zinco"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"aluminio"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"chumbo"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"estanho"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"niquel"|floatformat:2 }}</td>
+      <td>{{ week.list|media:"dolar"|floatformat:2 }}</td>
+    </tr>
+  {% endfor %}
+
+  <tr class="mediaperiodohor" style="text-align: center">
+    <td>Média do período:<br> {{ week.grouper }}</td>
+    <td>{{ media_periodo.media_cobre.cobre__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_zinco.zinco__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_aluminio.aluminio__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_chumbo.chumbo__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_estanho.estanho__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_niquel.niquel__avg|floatformat:2 }}</td>
+    <td>{{ media_periodo.media_dolar.dolar__avg|floatformat:2 }}</td>
+  </tr>
+
+  </tbody>
+  <tfoot>
+  <tr style="text-align: center">
+    <th>Data</th>
+    <th>Cobre</th>
+    <th>Zinco</th>
+    <th>Alumínio</th>
+    <th>Chumbo</th>
+    <th>Estanho</th>
+    <th>Níquel</th>
+    <th>Dolar</th>
+  </tr>
+  </tfoot>
+</table>
