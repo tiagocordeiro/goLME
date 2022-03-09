@@ -20,10 +20,8 @@ def update_metal_exchange():
         )
         obj = LondonMetalExchange.objects.filter(date=item['date']).first()
         if obj:
-            # Se existir LondonMetalExchange, então atualiza os dados.
-            for key, value in values.items():
-                setattr(obj, key, value)
-            obj.save()
+            # Se existir LondonMetalExchange, então não atualiza os dados.
+            pass
         else:
             # Senão cria um novo.
             LondonMetalExchange.objects.create(**values)
