@@ -98,12 +98,17 @@ def json_view(request, date_from=None, date_to=None, limit=100, api_key=None):
     return JsonResponse(data)
 
 
-def summary(request, date_from=None, date_to=None, limit=100):
-    lme_prices = get_lme(date_from=date_from, date_to=date_to, limit=limit)
+def summary(request):
+    summary_data = LondonMetalExchange.objects.last()
+    data = {"result": {"data": summary_data.date,
+                       "cobre": summary_data.cobre,
+                       "zinco": summary_data.zinco,
+                       "aluminio": summary_data.aluminio,
+                       "chumbo": summary_data.chumbo,
+                       "estanho": summary_data.estanho,
+                       "niquel": summary_data.niquel,
+                       "dolar": summary_data.dolar}}
 
-    json_data = json_builder(lme_prices)
-
-    data = {"result": json_data[-1]}
     return JsonResponse(data)
 
 
