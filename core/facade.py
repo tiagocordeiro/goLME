@@ -38,7 +38,7 @@ def get_lme(date_from=None, date_to=None, limit=40):
 
     date_from = datetime.strptime(date_from, '%d-%m-%Y')
     date_to = datetime.strptime(date_to, '%d-%m-%Y')
-    lme = LondonMetalExchange.objects.filter(date__range=(date_from, date_to)).order_by('-date')[:limit]
+    lme = LondonMetalExchange.objects.filter(date__range=(date_from, date_to)).order_by('date')[:limit]
     return lme
 
 
