@@ -117,8 +117,7 @@ def get_data_exchange():
                     field_list.append(item[0])
 
             if "Unofficial" in _dict.values() or "N/C" in _dict.values() or "feriado" in _dict.values():
-                new_dict = search_for_previous_value(_dict, dict_prices, field_list)  # noqa E501
-                dict_prices.append(new_dict)
+                pass
             else:
                 dict_prices.append(_dict)
 
