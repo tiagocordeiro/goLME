@@ -18,6 +18,10 @@ def media(list_items, serie):
             sum_total = sum_total + float(item.__dict__[f'{serie}'])
         except TypeError:
             items_quantity = items_quantity - 1
+        except ValueError:
+            items_quantity = items_quantity - 1
+            if items_quantity <= 0:
+                items_quantity = 1
 
     average = sum_total / items_quantity
 

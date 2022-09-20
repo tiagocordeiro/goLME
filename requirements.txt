@@ -27,3 +27,6 @@ beautifulsoup4==4.11.1
 
 # utils
 django-extensions==3.2.1
+
+# holidays
+holidays==0.16
