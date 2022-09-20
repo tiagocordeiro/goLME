@@ -14,7 +14,7 @@ from .facade import (
     get_lme_avg,
     get_remote_addr,
     json_builder,
-    json_chart_builder
+    json_chart_builder, treats_holidays
 )
 from .forms import ProfileForm
 from .models import LondonMetalExchange, Profile
@@ -39,10 +39,15 @@ def group_by_week(request, api_key=None):
     if api_key:
         try:
             profile = Profile.objects.get(api_secret_key=api_key)
+            # Lida com os feriados
+            if profile.show_holidays:
+                treats_holidays(lme)
+
         except Profile.DoesNotExist:
             return render(request, 'ops.html')
     else:
         profile = None
+        treats_holidays(lme)
 
     context = {
         'lme': lme,
@@ -240,7 +245,7 @@ def profile_update(request):
 
     user = User.objects.get(username=request.user)
 
-    profile_inline_formset = inlineformset_factory(User, Profile, fields=('avatar', ), can_delete=False)
+    profile_inline_formset = inlineformset_factory(User, Profile, fields=('avatar', 'show_holidays'), can_delete=False)
 
     if request.method == 'POST':
         form = ProfileForm(data=request.POST, instance=request.user)

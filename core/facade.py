@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import pandas as pd
+import holidays
 from django.db.models import Avg
 
 from .models import LondonMetalExchange
@@ -229,3 +230,22 @@ def get_lme_avg(lme):
         'media_niquel': media_niquel,
         'media_dolar': media_dolar,
     }
+
+
+def treats_holidays(lme):
+    holidays_lme = holidays.UK()
+    holidays_br = holidays.BR()
+
+    for item in lme:
+        if item.date in holidays_lme:
+            item.cobre = 'feriado'
+            item.zinco = 'feriado'
+            item.aluminio = 'feriado'
+            item.chumbo = 'feriado'
+            item.estanho = 'feriado'
+            item. niquel = 'feriado'
+
+        if item.date in holidays_br:
+            item.dolar = 'feriado'
+
+    return lme

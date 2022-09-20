@@ -33,6 +33,7 @@ class Profile(models.Model):
     api_view = models.BooleanField("Habilitar API programática", default=False)
     api_secret_key = models.CharField(max_length=36, blank=True, null=True)
     site_url = models.URLField(max_length=200, blank=True, null=True)
+    show_holidays = models.BooleanField("Exibir 'feriado'", default=False)
 
     class Meta:
         verbose_name_plural = "Profiles"
