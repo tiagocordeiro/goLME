@@ -236,6 +236,9 @@ def treats_holidays(lme):
     holidays_lme = holidays.UK()
     holidays_br = holidays.BR()
 
+    # dropa funeral da rainha
+    holidays_lme.pop("2022-09-19")
+
     for item in lme:
         if item.date in holidays_lme:
             item.cobre = 'feriado'
