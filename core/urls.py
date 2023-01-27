@@ -12,6 +12,7 @@ urlpatterns = [
     path('chart/', views.chart, name='chart'),
     path('chart/<date_from>/<date_to>', views.chart, name='chart_periodo'),
     path('chart/json/', views.json_for_chart, name='json_for_chart'),
+    path('chart/json/<date_from>/<date_to>', views.json_for_chart, name='json_for_chart_by_period'),
     path('grafico/', views.chart, name='grafico'),
     path('grafico/<str:api_key>/', views.chart, name='grafico'),
     path('grafico/<date_from>/<date_to>', views.chart, name='grafico_periodo'),
