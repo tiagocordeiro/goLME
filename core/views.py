@@ -14,7 +14,7 @@ from .facade import (
     get_lme_avg,
     get_remote_addr,
     json_builder,
-    json_chart_builder, treats_holidays
+    json_chart_builder, treats_holidays, variations
 )
 from .forms import ProfileForm
 from .models import LondonMetalExchange, Profile
@@ -268,3 +268,23 @@ def profile_update(request):
                                                    'formset': formset,
                                                    'usuario': usuario,
                                                    'user': user, })
+
+
+def json_variations(request, date_from=None, date_to=None):
+    try:
+        secret_key = request.headers["Token"]
+
+    except KeyError:
+        response = JsonResponse({"status": "false", "message": "Token não informado"}, status=500)
+        return response
+
+    try:
+        Profile.objects.get(api_secret_key=secret_key)
+        variations_data = variations(date_from, date_to)
+
+        response = JsonResponse(variations_data)
+        return response
+
+    except Profile.DoesNotExist:
+        response = JsonResponse({"status": "false", "message": "Token inválido"}, status=500)
+        return response
