@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 import pandas as pd
 import holidays
@@ -238,6 +239,8 @@ def treats_holidays(lme):
 
     # dropa funeral da rainha
     holidays_lme.pop("2022-09-19")
+    # dropa mais um feriado UK
+    holidays_lme.pop("2023-01-03")
 
     for item in lme:
         if item.date in holidays_lme:
@@ -246,9 +249,162 @@ def treats_holidays(lme):
             item.aluminio = 'feriado'
             item.chumbo = 'feriado'
             item.estanho = 'feriado'
-            item. niquel = 'feriado'
+            item.niquel = 'feriado'
 
         if item.date in holidays_br:
             item.dolar = 'feriado'
 
     return lme
+
+
+def variations(date_from=None, date_to=None):
+    if date_from is None:
+        date_from = get_last_five_weeks()
+    else:
+        date_from = date_from
+    if date_to is None:
+        date_to = get_last()
+    else:
+        date_to = date_to
+
+    date_to = datetime.strptime(date_to, '%d-%m-%Y')
+    date_from = datetime.strptime(date_from, '%d-%m-%Y')
+
+    lme_periodo = LondonMetalExchange.objects.filter(date__range=(date_from, date_to)).order_by('date')
+
+    days = abs(date_to - date_from).days
+    weeks = days // 7
+
+    lista_semanas = []
+    lista_semanas_data = []
+    lista_media_cobre_semanal = []
+    lista_media_zinco_semanal = []
+    lista_media_aluminio_semanal = []
+    lista_media_chumbo_semanal = []
+    lista_media_estanho_semanal = []
+    lista_media_niquel_semanal = []
+    lista_media_dolar_semanal = []
+
+    data_base = date_to
+    for i in range(weeks):
+        valores_semana = lme_periodo.filter(date__week=data_base.strftime('%W'), date__year=data_base.year)
+
+        media_cobre_semanal = valores_semana.aggregate(Avg('cobre'))
+        media_zinco_semanal = valores_semana.aggregate(Avg('zinco'))
+        media_aluminio_semanal = valores_semana.aggregate(Avg('aluminio'))
+        media_chumbo_semanal = valores_semana.aggregate(Avg('chumbo'))
+        media_estanho_semanal = valores_semana.aggregate(Avg('estanho'))
+        media_niquel_semanal = valores_semana.aggregate(Avg('niquel'))
+        media_dolar_semanal = valores_semana.aggregate(Avg('dolar'))
+
+        lista_semanas.append({f"semana {data_base.strftime('%W')}/{data_base.year}":
+            {
+                "cobre": round(media_cobre_semanal['cobre__avg'], 2),
+                "zinco": round(media_zinco_semanal['zinco__avg'], 2),
+                "aluminio": round(media_aluminio_semanal['aluminio__avg'], 2),
+                "chumbo": round(media_chumbo_semanal['chumbo__avg'], 2),
+                "estanho": round(media_estanho_semanal['estanho__avg'], 2),
+                "niquel": round(media_niquel_semanal['niquel__avg'], 2),
+                "dolar": round(media_dolar_semanal['dolar__avg'], 2)
+            }
+        })
+        lista_semanas_data.append(f"semana {data_base.strftime('%W')}/{data_base.year}")
+        lista_media_cobre_semanal.append(round(media_cobre_semanal['cobre__avg'], 2))
+        lista_media_zinco_semanal.append(round(media_zinco_semanal['zinco__avg'], 2))
+        lista_media_aluminio_semanal.append(round(media_aluminio_semanal['aluminio__avg'], 2))
+        lista_media_chumbo_semanal.append(round(media_chumbo_semanal['chumbo__avg'], 2))
+        lista_media_estanho_semanal.append(round(media_estanho_semanal['estanho__avg'], 2))
+        lista_media_niquel_semanal.append(round(media_niquel_semanal['niquel__avg'], 2))
+        lista_media_dolar_semanal.append(round(media_dolar_semanal['dolar__avg'], 2))
+        data_base = data_base - timedelta(weeks=1)
+
+    lista_meses = []
+    lista_meses_data = []
+    lista_media_cobre_mensal = []
+    lista_media_zinco_mensal = []
+    lista_media_aluminio_mensal = []
+    lista_media_chumbo_mensal = []
+    lista_media_estanho_mensal = []
+    lista_media_niquel_mensal = []
+    lista_media_dolar_mensal = []
+    mes_base = date_to
+
+    for i in range(12):
+        valores_mes = LondonMetalExchange.objects.filter(date__month=mes_base.strftime('%m'),
+                                                         date__year=mes_base.year).order_by('date')
+
+        media_cobre_mensal = valores_mes.aggregate(Avg('cobre'))
+        media_zinco_mensal = valores_mes.aggregate(Avg('zinco'))
+        media_aluminio_mensal = valores_mes.aggregate(Avg('aluminio'))
+        media_chumbo_mensal = valores_mes.aggregate(Avg('chumbo'))
+        media_estanho_mensal = valores_mes.aggregate(Avg('estanho'))
+        media_niquel_mensal = valores_mes.aggregate(Avg('niquel'))
+        media_dolar_mensal = valores_mes.aggregate(Avg('dolar'))
+
+        lista_meses.append({f"{mes_base.strftime('%m')}/{mes_base.year}":
+            {
+                "cobre": round(media_cobre_mensal['cobre__avg'], 2),
+                "zinco": round(media_zinco_mensal['zinco__avg'], 2),
+                "aluminio": round(media_aluminio_mensal['aluminio__avg'], 2),
+                "chumbo": round(media_chumbo_mensal['chumbo__avg'], 2),
+                "estanho": round(media_estanho_mensal['estanho__avg'], 2),
+                "niquel": round(media_niquel_mensal['niquel__avg'], 2),
+                "dolar": round(media_dolar_mensal['dolar__avg'], 2)
+            }
+        })
+        lista_meses_data.append(f"{mes_base.strftime('%m')}/{mes_base.year}")
+        lista_media_cobre_mensal.append(round(media_cobre_mensal['cobre__avg'], 2))
+        lista_media_zinco_mensal.append(round(media_zinco_mensal['zinco__avg'], 2))
+        lista_media_aluminio_mensal.append(round(media_aluminio_mensal['aluminio__avg'], 2))
+        lista_media_chumbo_mensal.append(round(media_chumbo_mensal['chumbo__avg'], 2))
+        lista_media_estanho_mensal.append(round(media_estanho_mensal['estanho__avg'], 2))
+        lista_media_niquel_mensal.append(round(media_niquel_mensal['niquel__avg'], 2))
+        lista_media_dolar_mensal.append(round(media_dolar_mensal['dolar__avg'], 2))
+        mes_base = mes_base - relativedelta(months=1)
+
+    series_semanal = [
+        {"name": 'Cobre', "data": lista_media_cobre_semanal},
+        {"name": 'Zinco', "data": lista_media_zinco_semanal},
+        {"name": 'Alumínio', "data": lista_media_aluminio_semanal},
+        {"name": 'Chumbo', "data": lista_media_chumbo_semanal},
+        {"name": 'Estanho', "data": lista_media_estanho_semanal},
+        {"name": 'Níquel', "data": lista_media_niquel_semanal},
+        {"name": 'Dolar', "data": lista_media_dolar_semanal}
+    ]
+
+    semanal_title = {"text": 'Variação semanal LME'}
+    semanal_xaxis = {"categories": lista_semanas_data, "crosshair": 'true'}
+    semanal_yaxis = {"title": {"text": 'Valor'}}
+
+    series_mensal = [
+        {"name": 'Cobre', "data": lista_media_cobre_mensal},
+        {"name": 'Zinco', "data": lista_media_zinco_mensal},
+        {"name": 'Alumínio', "data": lista_media_aluminio_mensal},
+        {"name": 'Chumbo', "data": lista_media_chumbo_mensal},
+        {"name": 'Estanho', "data": lista_media_estanho_mensal},
+        {"name": 'Níquel', "data": lista_media_niquel_mensal},
+        {"name": 'Dolar', "data": lista_media_dolar_mensal}
+    ]
+
+    mensal_title = {"text": 'Variação mensal LME'}
+    mensal_xaxis = {"categories": lista_meses_data, "crosshair": 'true'}
+    mensal_yaxis = {"title": {"text": 'Valor'}}
+
+    context = {
+        "mensal": {
+            "xAxis": mensal_xaxis,
+            "yAxis": mensal_yaxis,
+            "series": series_mensal,
+            "title": mensal_title
+        },
+        "semanal": {
+            "xAxis": semanal_xaxis,
+            "yAxis": semanal_yaxis,
+            "series": series_semanal,
+            "title": semanal_title
+        },
+        "semanas": lista_semanas,
+        "meses": lista_meses,
+    }
+
+    return context
