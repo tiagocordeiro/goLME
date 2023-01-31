@@ -263,7 +263,7 @@ def variations(date_from=None, date_to=None):
     else:
         date_from = date_from
     if date_to is None:
-        date_to = get_last()
+        date_to = str(datetime.strftime(datetime.today(), '%d-%m-%Y'))
     else:
         date_to = date_to
 
