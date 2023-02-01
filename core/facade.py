@@ -263,7 +263,7 @@ def variations(date_from=None, date_to=None):
     else:
         date_from = date_from
     if date_to is None:
-        date_to = str(datetime.strftime(datetime.today(), '%d-%m-%Y'))
+        date_to = get_last()
     else:
         date_to = date_to
 
@@ -328,6 +328,13 @@ def variations(date_from=None, date_to=None):
     lista_media_niquel_mensal = []
     lista_media_dolar_mensal = []
     mes_base = date_to
+
+    # Pega valores para validar antes do for se query não está vazio
+    valores_mes = LondonMetalExchange.objects.filter(date__month=mes_base.strftime('%m'),
+                                                     date__year=mes_base.year).order_by('date')
+
+    if len(valores_mes) == 0:
+        mes_base = mes_base - relativedelta(months=1)
 
     for i in range(12):
         valores_mes = LondonMetalExchange.objects.filter(date__month=mes_base.strftime('%m'),
