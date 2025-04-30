@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.management import BaseCommand
 
 from core.models import LondonMetalExchange
@@ -21,6 +23,9 @@ def update_metal_exchange():
         obj = LondonMetalExchange.objects.filter(date=item['date']).first()
         if obj:
             # Se existir LondonMetalExchange, então não atualiza os dados.
+            pass
+        elif values['date'].month == 12 and datetime.date.today().month == 1:
+            # Se for cotação de dezembro do ano anterior, então ignora.
             pass
         else:
             # Senão cria um novo.
