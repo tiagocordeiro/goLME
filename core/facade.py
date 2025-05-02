@@ -239,8 +239,6 @@ def treats_holidays(lme):
 
     # dropa funeral da rainha
     holidays_lme.pop("2022-09-19")
-    # dropa mais um feriado UK
-    holidays_lme.pop("2023-01-03")
 
     for item in lme:
         if item.date in holidays_lme:
