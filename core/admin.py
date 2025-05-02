@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from import_export.admin import ImportExportModelAdmin
 
 from .models import Profile, TimeSerie, LondonMetalExchange
 
@@ -9,7 +10,7 @@ class TimeSerieAdmin(admin.ModelAdmin):
     list_display = ('name', 'code')
 
 
-class LondonMetalExchangeAdmin(admin.ModelAdmin):
+class LondonMetalExchangeAdmin(ImportExportModelAdmin):
     list_display = ("date", "cobre", "zinco", "aluminio", "chumbo", "estanho", "niquel", "dolar")
     search_fields = ("date",)
 

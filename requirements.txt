@@ -30,3 +30,6 @@ django-extensions==3.2.3
 
 # holidays
 holidays==0.65
+
+# Import Export
+django-import-export==4.3.7
