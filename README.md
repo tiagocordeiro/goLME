@@ -12,9 +12,11 @@ Cotação London Metal Exchange
 ![Níquel](https://img.shields.io/badge/LME-Niquel-green.svg)
 
 ## Live demo
+
 https://lme.gorilaxpress.com/
 
 ### Alguns endpoints de exmplo
+
 ```
 /api/
 /api/<date_from>/<date_to>
@@ -36,7 +38,7 @@ https://lme.gorilaxpress.com/
 * Instale as dependências.
 * Rode as migrações.
 
-```
+```bash
 git clone https://github.com/tiagocordeiro/goLME.git
 cd goLME
 python3 -m venv venv
@@ -51,7 +53,7 @@ python manage.py migrate
 
 Para cria um usuário administrador
 
-```
+```bash
 python manage.py createsuperuser --username dev --email dev@foo.bar
 ```
 
@@ -59,26 +61,32 @@ python manage.py createsuperuser --username dev --email dev@foo.bar
 
 Cria timeseries
 
-```
+```bash
 python manage.py loaddata lme_time_series
 ```
 
 ### Atualiza preços do LME
 
+```bash
+python manage.py update_lme2
 ```
-python manage.py update_lme
+
+### Importando csv
+
+```bash
+python manage.py import_cotacoes LondonMetalExchange-2025-05-02.csv
 ```
 
 ### Rodar em ambiente de desenvolvimento
 
 Para rodar o projeto localmente
 
-```
+```bash
 python manage.py runserver
 ```
 
 ### Banco de dados para ambiente de desenvolvimento com Docker
 
-```
+```bash
 docker-compose up -d
 ```
