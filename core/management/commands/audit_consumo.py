@@ -53,12 +53,17 @@ class Command(BaseCommand):
         if not por_conta:
             self.stdout.write("  (nenhuma)")
         for row in por_conta:
+            # Tratamento de limites para não quebrar a tela
+            username = str(row['profile__user__username'] or '-')[:22]
+            email = str(row['profile__user__email'] or '-')[:30]
+            site = str(row['profile__site_url'] or '-')[:40]
+
             self.stdout.write(
-                f"  {row['profile__user__username']:<24} "
-                f"{(row['profile__user__email'] or '-'):<32} "
+                f"  {username:<24} "
+                f"{email:<32} "
                 f"reqs={row['requests']:<7} ips={row['ips']:<4} "
                 f"último={row['ultimo']:%Y-%m-%d %H:%M} "
-                f"site={row['profile__site_url'] or '-'}"
+                f"site={site}"
             )
 
         # 2) Contas com key que NÃO consumiram no período (dormentes)
@@ -74,7 +79,12 @@ class Command(BaseCommand):
         if not dormentes:
             self.stdout.write("  (nenhuma)")
         for p in dormentes:
-            self.stdout.write(f"  {p.user.username:<24} {(p.user.email or '-'):<32} site={p.site_url or '-'}")
+            # Tratamento de limites para contas dormentes
+            username = str(p.user.username or '-')[:22]
+            email = str(p.user.email or '-')[:30]
+            site = str(p.site_url or '-')[:40]
+
+            self.stdout.write(f"  {username:<24} {email:<32} site={site}")
 
         # 3) Keys INVÁLIDAS apresentadas (não batem com nenhum Profile) — possível abuso
         invalidas = list(
@@ -88,8 +98,11 @@ class Command(BaseCommand):
         if not invalidas:
             self.stdout.write("  (nenhuma)")
         for row in invalidas:
+            # Tratamento de limite para a chave (pode vir algum lixo gigantesco no request)
+            key_invalida = str(row['api_key_used'] or '-')[:38]
+
             self.stdout.write(
-                f"  {row['api_key_used']:<40} reqs={row['requests']:<7} "
+                f"  {key_invalida:<40} reqs={row['requests']:<7} "
                 f"ips={row['ips']:<4} último={row['ultimo']:%Y-%m-%d %H:%M}"
             )
 
