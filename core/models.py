@@ -38,7 +38,40 @@ class Profile(models.Model):
     class Meta:
         verbose_name_plural = "Profiles"
 
+    def __str__(self):
+        return self.user.get_username()
+
     def save(self, *args, **kwargs):
         if self.api_secret_key is None:
             self.api_secret_key = make_secret()
         super(Profile, self).save(*args, **kwargs)
+
+class ApiRequestLog(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
+    profile = models.ForeignKey(
+        "Profile",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="request_logs",
+    )
+    # Key literal apresentada na requisição (mesmo que inválida) — útil p/ abuso.
+    api_key_used = models.CharField(max_length=64, blank=True, default="", db_index=True)
+    url_name = models.CharField(max_length=64, blank=True, default="")
+    path = models.CharField(max_length=255)
+    method = models.CharField(max_length=8)
+    status_code = models.PositiveSmallIntegerField(default=0)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=255, blank=True, default="")
+
+    class Meta:
+        verbose_name = "API request log"
+        verbose_name_plural = "API request logs"
+        indexes = [
+            models.Index(fields=["profile", "timestamp"]),
+            models.Index(fields=["api_key_used", "timestamp"]),
+        ]
+
+    def __str__(self):
+        who = self.profile.user if self.profile_id else (self.api_key_used or "anon")
+        return f"{self.timestamp:%Y-%m-%d %H:%M} {who} {self.path}"
