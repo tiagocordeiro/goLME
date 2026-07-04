@@ -40,7 +40,16 @@ def get_lme(date_from=None, date_to=None, limit=40):
 
     date_from = datetime.strptime(date_from, '%d-%m-%Y')
     date_to = datetime.strptime(date_to, '%d-%m-%Y')
-    lme = LondonMetalExchange.objects.filter(date__range=(date_from, date_to)).order_by('date')[:limit]
+
+    # Issue #127: quando o intervalo e informado, o limite deve caber todo o
+    # periodo. +1 porque date__range e inclusivo nas duas pontas.
+    difference = (date_to - date_from).days + 1
+    if difference > limit:
+        limit = difference
+
+    lme = LondonMetalExchange.objects.filter(
+        date__range=(date_from, date_to)
+    ).order_by('date')[:limit]
     return lme
 
 
