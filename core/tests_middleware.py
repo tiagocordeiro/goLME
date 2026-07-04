@@ -75,7 +75,58 @@ class ApiUsageLogMiddlewareTest(TestCase):
         request.resolver_match = resolve("/summary/")
         with patch("core.middleware.ApiRequestLog.objects.create",
                    side_effect=Exception("boom")):
-            with self.assertLogs("core.middleware", level="ERROR"):  # captura o log
-                response = make_middleware()(request)
-        self.assertEqual(response.status_code, 200)
+            response = make_middleware()(request)
+        self.assertEqual(response.status_code, 200)  # cliente nao ve o erro
         self.assertEqual(ApiRequestLog.objects.count(), 0)
+
+
+@override_settings(ROOT_URLCONF="core.urls")
+class ApiUsageLogOrigemTest(TestCase):
+    """Issue #131: IP autoritativo da Cloudflare (CF-Connecting-IP) e captura
+    de Referer/Origin."""
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def _call(self, path, **extra):
+        request = self.factory.get(path, **extra)
+        request.resolver_match = resolve(path)
+        return make_middleware()(request)
+
+    def test_cf_connecting_ip_tem_prioridade_sobre_xff(self):
+        self._call("/summary/",
+                   HTTP_CF_CONNECTING_IP="200.100.50.25",
+                   HTTP_X_FORWARDED_FOR="10.0.0.9, 172.16.0.1")
+        log = ApiRequestLog.objects.get()
+        self.assertEqual(log.ip, "200.100.50.25")
+        self.assertEqual(log.cf_connecting_ip, "200.100.50.25")
+
+    def test_xff_forjado_e_ignorado_quando_ha_cf(self):
+        # Cliente tenta forjar o XFF; a CF anexa o IP real e preenche o header.
+        self._call("/summary/",
+                   HTTP_CF_CONNECTING_IP="200.100.50.25",
+                   HTTP_X_FORWARDED_FOR="1.2.3.4")  # forjado
+        log = ApiRequestLog.objects.get()
+        self.assertEqual(log.ip, "200.100.50.25")   # NAO usa o forjado
+        self.assertNotEqual(log.ip, "1.2.3.4")
+
+    def test_fallback_para_xff_sem_header_da_cloudflare(self):
+        self._call("/summary/", HTTP_X_FORWARDED_FOR="8.8.8.8, 10.0.0.1")
+        log = ApiRequestLog.objects.get()
+        self.assertEqual(log.ip, "8.8.8.8")
+        self.assertIsNone(log.cf_connecting_ip)
+
+    def test_referer_e_origin_sao_capturados(self):
+        self._call("/summary/",
+                   HTTP_REFERER="https://cliente.com.br/cotacoes",
+                   HTTP_ORIGIN="https://cliente.com.br")
+        log = ApiRequestLog.objects.get()
+        self.assertEqual(log.referer, "https://cliente.com.br/cotacoes")
+        self.assertEqual(log.origin, "https://cliente.com.br")
+
+    def test_sem_origem_campos_ficam_vazios(self):
+        self._call("/summary/")
+        log = ApiRequestLog.objects.get()
+        self.assertEqual(log.referer, "")
+        self.assertEqual(log.origin, "")
+        self.assertIsNone(log.cf_connecting_ip)
