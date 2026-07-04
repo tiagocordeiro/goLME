@@ -47,9 +47,7 @@ def get_lme(date_from=None, date_to=None, limit=40):
     if difference > limit:
         limit = difference
 
-    lme = LondonMetalExchange.objects.filter(
-        date__range=(date_from, date_to)
-    ).order_by('date')[:limit]
+    lme = LondonMetalExchange.objects.filter(date__range=(date_from, date_to)).order_by('date')[:limit]
     return lme
 
 
@@ -100,8 +98,8 @@ def chart_builder(date_from=None, date_to=None, chart_id='chart_LME', chart_type
 
     df = df.drop('date', axis=1)
 
-    df.fillna(method='ffill', inplace=True)
-    df.fillna(method='bfill', inplace=True)
+    df.ffill(inplace=True)
+    df.bfill(inplace=True)
 
     cobre = [float(item) for item in list(df['cobre'])]
     zinco = [float(item) for item in list(df['zinco'])]
@@ -174,8 +172,8 @@ def json_chart_builder(date_from=None, date_to=None, chart_id='chart_LME', chart
 
     df = df.drop('date', axis=1)
 
-    df.fillna(method='ffill', inplace=True)
-    df.fillna(method='bfill', inplace=True)
+    df.ffill(inplace=True)
+    df.bfill(inplace=True)
 
     cobre = [float(item) for item in list(df['cobre'])]
     zinco = [float(item) for item in list(df['zinco'])]

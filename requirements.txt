@@ -4,6 +4,9 @@ django==5.1.8
 # Decouple
 python-decouple==3.8
 
+#Pandas
+pandas==2.2.0
+
 # Quandl
 Quandl==3.7.0
 
