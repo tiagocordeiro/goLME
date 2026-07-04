@@ -33,7 +33,7 @@ class CustomUserAdmin(UserAdmin):
 
 class ApiRequestLogAdmin(admin.ModelAdmin):
     list_display = ("timestamp", "conta", "api_key_used", "url_name",
-                    "status_code", "ip")
+                    "status_code", "ip", "referer")
     list_filter = ("url_name", "status_code", "timestamp")
     search_fields = ("api_key_used", "ip", "profile__user__username")
     date_hierarchy = "timestamp"

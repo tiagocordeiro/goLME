@@ -62,6 +62,11 @@ class ApiRequestLog(models.Model):
     method = models.CharField(max_length=8)
     status_code = models.PositiveSmallIntegerField(default=0)
     ip = models.GenericIPAddressField(null=True, blank=True)
+    # IP autoritativo da Cloudflare (nao falsificavel pelo cliente).
+    cf_connecting_ip = models.GenericIPAddressField(null=True, blank=True)
+    # Origem da requisicao (util para chamadas de navegador/iframe).
+    referer = models.CharField(max_length=512, blank=True, default="")
+    origin = models.CharField(max_length=512, blank=True, default="")
     user_agent = models.CharField(max_length=255, blank=True, default="")
 
     class Meta:

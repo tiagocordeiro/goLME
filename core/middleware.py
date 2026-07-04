@@ -23,9 +23,20 @@ API_URL_NAMES = {
 }
 
 
+def _cf_ip(request):
+    """IP que a Cloudflare enxergou. Ela sobrescreve este header, então o
+    cliente não consegue forjar. Vazio se a requisição não passou pela CF."""
+    return request.headers.get("CF-Connecting-IP", "").strip()
+
+
 def _client_ip(request):
-    """IP real do consumidor. Atrás do router do Heroku, o cliente é o
-    primeiro item de X-Forwarded-For; REMOTE_ADDR seria o próprio router."""
+    """IP real do consumidor, por ordem de confiabilidade:
+    1) CF-Connecting-IP (autoritativo atrás da Cloudflare, não falsificável)
+    2) primeiro hop do X-Forwarded-For (cliente, mas falsificável)
+    3) REMOTE_ADDR (o proxy/router mais próximo)"""
+    cf = _cf_ip(request)
+    if cf:
+        return cf
     xff = request.META.get("HTTP_X_FORWARDED_FOR", "")
     if xff:
         return xff.split(",")[0].strip()
@@ -70,5 +81,8 @@ class ApiUsageLogMiddleware:
             method=request.method,
             status_code=getattr(response, "status_code", 0),
             ip=_client_ip(request),
+            cf_connecting_ip=_cf_ip(request) or None,
+            referer=request.headers.get("Referer", "")[:512],
+            origin=request.headers.get("Origin", "")[:512],
             user_agent=request.META.get("HTTP_USER_AGENT", "")[:255],
         )
