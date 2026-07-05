@@ -23,8 +23,6 @@ EMAIL_PORT=25
 EMAIL_USE_TLS=False
 EMAIL_HOST_USER=
 EMAIL_HOST_PASSWORD=
-# Quandl API Key
-QUANDL_KEY=
 LME_SOURCE=
 """.strip() % get_random_string(50, chars)
 

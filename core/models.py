@@ -8,6 +8,7 @@ def make_secret():
     return str(uuid.uuid4())
 
 
+# TODO: TimeSerie ficou orfao apos remover update_lme - avaliar deprecacao
 class TimeSerie(models.Model):
     name = models.CharField(max_length=255, blank=False, null=False)
     code = models.CharField(unique=True, max_length=50, blank=False, null=False)

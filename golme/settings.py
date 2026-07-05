@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
-import quandl
 from decouple import Csv, config
 from dj_database_url import parse as dburl
 
@@ -140,9 +139,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 
 COLLECTFAST_ENABLED = False
-
-# Quandl
-quandl.ApiConfig.api_key = config('QUANDL_KEY')
 
 # Force ssl if run in Heroku
 if 'DYNO' in os.environ:
