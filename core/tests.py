@@ -1,7 +1,9 @@
+import sys
 from datetime import date, timedelta
 from decimal import Decimal
 
-from django.test import TestCase
+import django
+from django.test import SimpleTestCase, TestCase
 
 from core.facade import get_lme
 from core.models import LondonMetalExchange
@@ -64,3 +66,20 @@ class GetLmeLimitePeriodoTest(TestCase):
         criar_cotacoes(date(2022, 1, 1), 10)
         resultado = get_lme()
         self.assertLessEqual(len(resultado), 40)
+
+
+class AppBoot(SimpleTestCase):
+    """Protege o deploy na venv de producao: a app precisa inicializar mesmo
+    sem o pacote `quandl` instalado (Quandl esta morto — Nasdaq Data Link)."""
+
+    def test_app_inicializa_sem_quandl(self):
+        # Nao deve levantar ImportError ao popular o registro de apps.
+        django.setup()
+
+        # E nenhum modulo carregado no boot pode ainda fazer `import quandl`
+        # (se fizesse, estaria em sys.modules aqui).
+        self.assertNotIn(
+            "quandl",
+            sys.modules,
+            "Algum modulo importado no boot ainda faz `import quandl`.",
+        )
