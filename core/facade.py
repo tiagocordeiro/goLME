@@ -438,3 +438,13 @@ def variations(date_from=None, date_to=None):
     }
 
     return context
+
+
+def variations_cached(date_from=None, date_to=None):
+    """Versao cacheada de variations(...). Retorna dict pickavel."""
+    key = f"lme_variations:{date_from}:{date_to}"
+    cached = cache.get(key)
+    if cached is None:
+        cached = variations(date_from, date_to)
+        cache.set(key, cached, LME_CACHE_TTL)
+    return cached
