@@ -1,1 +1,1 @@
-web: gunicorn golme.wsgi
+web: gunicorn golme.wsgi --workers 2 --preload --timeout 29 --max-requests 200 --max-requests-jitter 50
