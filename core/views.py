@@ -18,7 +18,7 @@ from .facade import (
     json_chart_builder_cached,
     summary_data,
     treats_holidays,
-    variations,
+    variations_cached,
 )
 from .forms import ProfileForm
 from .models import LondonMetalExchange, Profile
@@ -270,7 +270,7 @@ def json_variations(request, date_from=None, date_to=None):
 
     try:
         Profile.objects.get(api_secret_key=secret_key)
-        variations_data = variations(date_from, date_to)
+        variations_data = variations_cached(date_from, date_to)
 
         response = JsonResponse(variations_data)
         return response

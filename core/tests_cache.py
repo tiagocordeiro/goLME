@@ -14,7 +14,12 @@ from django.core.cache import cache
 from django.test import TestCase
 
 from core import facade
-from core.facade import build_lme_json, json_chart_builder_cached, summary_data
+from core.facade import (
+    build_lme_json,
+    json_chart_builder_cached,
+    summary_data,
+    variations_cached,
+)
 from core.models import LondonMetalExchange
 
 
@@ -86,3 +91,20 @@ class CacheCotacoesTest(TestCase):
             build_lme_json(fmt(self.inicio), fmt(self.fim))  # cache vazio -> recomputa
 
         self.assertEqual(spy.call_count, 2, "Apos cache.clear() a mesma chave deve recomputar.")
+
+    def test_variations_cached_cacheia_e_nao_recomputa(self):
+        with mock.patch.object(facade, "variations", wraps=facade.variations) as spy:
+            r1 = variations_cached(fmt(self.inicio), fmt(self.fim))
+            r2 = variations_cached(fmt(self.inicio), fmt(self.fim))
+
+        self.assertEqual(spy.call_count, 1, "variations deveria rodar so 1x (2a chamada e cache hit).")
+        self.assertEqual(r1, r2)
+
+    def test_variations_cached_chaves_diferentes_nao_colidem(self):
+        # Intervalos diferentes => chaves diferentes => recomputa cada um.
+        meio = self.inicio + timedelta(days=4)
+        with mock.patch.object(facade, "variations", wraps=facade.variations) as spy:
+            variations_cached(fmt(self.inicio), fmt(meio))
+            variations_cached(fmt(meio + timedelta(days=1)), fmt(self.fim))
+
+        self.assertEqual(spy.call_count, 2, "Intervalos distintos nao devem compartilhar chave de cache.")
