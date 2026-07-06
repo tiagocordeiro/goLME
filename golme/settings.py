@@ -92,16 +92,34 @@ DATABASES = {
 }
 
 # Cache
-# LocMemCache: em processo, sem addon/custo. Guarda a CONSTRUCAO do dado das
-# cotacoes (que so muda ~1x/dia), nao a resposta HTTP dos endpoints com token.
-# TIMEOUT=600s garante frescor sem depender de invalidacao cross-dyno.
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "golme-cache",
-        "TIMEOUT": 600,
+# Guarda a CONSTRUCAO do dado das cotacoes (que so muda ~1x/dia), nao a
+# resposta HTTP dos endpoints com token.
+#
+# - Com REDIS_URL (prod/Heroku): backend Redis nativo do Django 5.1,
+#   COMPARTILHADO entre workers/dynos. Assim o scheduler pode pre-aquecer e
+#   invalidar (cache.clear()) e os web dynos veem o resultado.
+# - Sem REDIS_URL (dev/local/testes): LocMemCache por-processo, sem addon/custo.
+REDIS_URL = config('REDIS_URL', default=None)
+
+if REDIS_URL:
+    # Gotcha Heroku: a URL vem como rediss:// (TLS com cert self-signed) e o
+    # redis-py rejeita por padrao. ssl_cert_reqs=none desliga a verificacao.
+    if REDIS_URL.startswith('rediss://') and 'ssl_cert_reqs' not in REDIS_URL:
+        REDIS_URL += ('&' if '?' in REDIS_URL else '?') + 'ssl_cert_reqs=none'
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
+        }
     }
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "golme-cache",
+            "TIMEOUT": 600,
+        }
+    }
 
 # Required by Django > 3.2
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

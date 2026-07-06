@@ -8,9 +8,11 @@ from django.db.models import Avg
 
 from .models import LondonMetalExchange
 
-# TTL do cache da construcao das cotacoes. Os dados mudam ~1x/dia, entao
-# 600s (10min) segura os picos de request sem servir dado velho por muito tempo.
-LME_CACHE_TTL = 600
+# TTL do cache da construcao das cotacoes. Os dados mudam ~1x/dia. Com o cache
+# compartilhado (Redis), a invalidacao passa a ser confiavel: o update_lme2 faz
+# cache.clear() + pre-aquecimento cross-dyno. Por isso da pra subir para 1h sem
+# risco de servir dado velho (entrou cotacao nova -> cache e limpo e reaquecido).
+LME_CACHE_TTL = 3600
 
 
 def get_last():

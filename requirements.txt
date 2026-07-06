@@ -33,3 +33,6 @@ holidays==0.65
 
 # Import Export
 django-import-export==4.3.7
+
+# Cache (backend Redis nativo do Django 5.1; so precisa do cliente redis-py)
+redis==5.2.1
