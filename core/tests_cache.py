@@ -6,12 +6,15 @@ O objetivo e provar que os wrappers de core.facade cacheiam a CONSTRUCAO do
 dado: a funcao pesada roda 1x por chave, chaves diferentes nao colidem e
 cache.clear() forca o recomputo.
 """
+import calendar
 from datetime import date, timedelta
 from decimal import Decimal
 from unittest import mock
 
+from dateutil.relativedelta import relativedelta
 from django.core.cache import cache
 from django.test import TestCase
+from django.utils import timezone
 
 from core import facade
 from core.facade import (
@@ -20,6 +23,7 @@ from core.facade import (
     summary_data,
     variations_cached,
 )
+from core.management.commands.preheat_cache import preheat_cache
 from core.models import LondonMetalExchange
 
 
@@ -108,3 +112,65 @@ class CacheCotacoesTest(TestCase):
             variations_cached(fmt(meio + timedelta(days=1)), fmt(self.fim))
 
         self.assertEqual(spy.call_count, 2, "Intervalos distintos nao devem compartilhar chave de cache.")
+
+
+class PreheatCacheTest(TestCase):
+    """Prova que preheat_cache() aquece as chaves que a VIEW json_for_chart pede.
+
+    Roda com LocMemCache (os testes nao tem Redis). Aqui o aquecimento fica no
+    proprio processo, entao o cache hit e observavel dentro do teste.
+    """
+
+    def setUp(self):
+        cache.clear()
+        # Seed diario cobrindo os ultimos ~400 dias (todos os 12 meses que o
+        # preheat aquece precisam ter dados, senao o pandas quebra em mes vazio).
+        hoje = timezone.localdate()
+        registros = [
+            LondonMetalExchange(
+                date=hoje - timedelta(days=i),
+                cobre=Decimal("1.00"),
+                zinco=Decimal("1.00"),
+                aluminio=Decimal("1.00"),
+                chumbo=Decimal("1.00"),
+                estanho=Decimal("1.00"),
+                niquel=Decimal("1.00"),
+                dolar=Decimal("5.00"),
+            )
+            for i in range(400)
+        ]
+        LondonMetalExchange.objects.bulk_create(registros)
+
+    def _mes_aquecido(self, i=1):
+        """Recria o intervalo do i-esimo mes atras exatamente como o preheat faz."""
+        alvo = timezone.localdate() - relativedelta(months=i)
+        ultimo_dia = calendar.monthrange(alvo.year, alvo.month)[1]
+        date_from = f"01-{alvo.month:02d}-{alvo.year}"
+        date_to = f"{ultimo_dia:02d}-{alvo.month:02d}-{alvo.year}"
+        return date_from, date_to
+
+    def test_preheat_torna_mes_um_cache_hit(self):
+        # Depois de aquecer, pedir um mes ja aquecido nao deve recomputar.
+        preheat_cache()
+        date_from, date_to = self._mes_aquecido()
+        with mock.patch.object(facade, "json_chart_builder", wraps=facade.json_chart_builder) as spy:
+            json_chart_builder_cached(date_from, date_to, "LME", "line", 350)
+
+        self.assertEqual(spy.call_count, 0, "Mes ja aquecido deveria vir do cache (sem recomputo).")
+
+    def test_preheat_usa_chart_id_LME_da_view(self):
+        # A chave depende do chart_id. Os args EXATOS da view ('LME') sao hit;
+        # o default do facade ('chart_LME') seria miss -> prova que o preheat
+        # aqueceu com o chart_id certo.
+        preheat_cache()
+        date_from, date_to = self._mes_aquecido()
+        with mock.patch.object(facade, "json_chart_builder", wraps=facade.json_chart_builder) as spy:
+            json_chart_builder_cached(date_from, date_to, "LME", "line", 350)  # como a view chama
+            self.assertEqual(spy.call_count, 0, "Args da view ('LME') devem bater com a chave aquecida.")
+
+            json_chart_builder_cached(date_from, date_to, "chart_LME", "line", 350)  # default do facade
+            self.assertEqual(spy.call_count, 1, "chart_id diferente => chave diferente => cache miss.")
+
+    def test_preheat_retorna_contagem_de_intervalos(self):
+        # Grafico atual + 12 meses = 13 intervalos.
+        self.assertEqual(preheat_cache(), 13)

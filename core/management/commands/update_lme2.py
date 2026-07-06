@@ -3,6 +3,7 @@ import datetime
 from django.core.cache import cache
 from django.core.management import BaseCommand
 
+from core.management.commands.preheat_cache import preheat_cache
 from core.models import LondonMetalExchange
 from core.new_data import get_data_exchange
 
@@ -44,9 +45,12 @@ class Command(BaseCommand):
         created = update_metal_exchange()
 
         if created > 0:
-            # Invalida o cache das cotacoes ao entrar dado novo.
-            # OBS: com LocMemCache o cache e por-processo, entao cache.clear()
-            # so limpa o cache deste processo (o dyno que roda o cron). O frescor
-            # real nos web dynos vem do TTL (LME_CACHE_TTL). Se um dia trocar o
-            # backend para Redis, este clear passa a valer cross-dyno.
+            # Entrou dado novo: invalida o cache e ja re-aquece no mesmo passo.
+            # Com Redis (cache compartilhado) o cache.clear() vale cross-dyno e
+            # o pre-aquecimento escreve as chaves que os web dynos vao ler, entao
+            # o seletor de meses responde instantaneo logo apos o update.
             cache.clear()
+            aquecidos = preheat_cache()
+            self.stdout.write(self.style.SUCCESS(
+                f"Cache invalidado e reaquecido: {aquecidos} intervalos."
+            ))
