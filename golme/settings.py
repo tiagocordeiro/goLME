@@ -91,6 +91,18 @@ DATABASES = {
     'default': config('DATABASE_URL', default=default_dburl, cast=dburl),
 }
 
+# Cache
+# LocMemCache: em processo, sem addon/custo. Guarda a CONSTRUCAO do dado das
+# cotacoes (que so muda ~1x/dia), nao a resposta HTTP dos endpoints com token.
+# TIMEOUT=600s garante frescor sem depender de invalidacao cross-dyno.
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "golme-cache",
+        "TIMEOUT": 600,
+    }
+}
+
 # Required by Django > 3.2
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

@@ -1,5 +1,6 @@
 import datetime
 
+from django.core.cache import cache
 from django.core.management import BaseCommand
 
 from core.models import LondonMetalExchange
@@ -9,6 +10,7 @@ from core.new_data import get_data_exchange
 def update_metal_exchange():
     items = get_data_exchange()
 
+    created = 0
     for item in items:
         values = dict(
             date=item['date'],
@@ -30,10 +32,21 @@ def update_metal_exchange():
         else:
             # Senão cria um novo.
             LondonMetalExchange.objects.create(**values)
+            created += 1
+
+    return created
 
 
 class Command(BaseCommand):
     help = '''Atualiza cotações lme no banco de dados'''
 
     def handle(self, *args, **options):
-        update_metal_exchange()
+        created = update_metal_exchange()
+
+        if created > 0:
+            # Invalida o cache das cotacoes ao entrar dado novo.
+            # OBS: com LocMemCache o cache e por-processo, entao cache.clear()
+            # so limpa o cache deste processo (o dyno que roda o cron). O frescor
+            # real nos web dynos vem do TTL (LME_CACHE_TTL). Se um dia trocar o
+            # backend para Redis, este clear passa a valer cross-dyno.
+            cache.clear()

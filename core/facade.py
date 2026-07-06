@@ -3,9 +3,14 @@ from dateutil.relativedelta import relativedelta
 
 import pandas as pd
 import holidays
+from django.core.cache import cache
 from django.db.models import Avg
 
 from .models import LondonMetalExchange
+
+# TTL do cache da construcao das cotacoes. Os dados mudam ~1x/dia, entao
+# 600s (10min) segura os picos de request sem servir dado velho por muito tempo.
+LME_CACHE_TTL = 600
 
 
 def get_last():
@@ -67,6 +72,20 @@ def json_builder(lme_prices):
             }
         )
     return itens_list
+
+
+def build_lme_json(date_from=None, date_to=None, limit=100):
+    """Versao cacheada de json_builder(get_lme(...)).
+
+    Cacheia a CONSTRUCAO do dado (lista de dicts, pickavel), nao a resposta
+    HTTP. A validacao de token/key continua na view.
+    """
+    key = f"lme_json:{date_from}:{date_to}:{limit}"
+    cached = cache.get(key)
+    if cached is None:
+        cached = json_builder(get_lme(date_from=date_from, date_to=date_to, limit=limit))
+        cache.set(key, cached, LME_CACHE_TTL)
+    return cached
 
 
 def chart_builder(date_from=None, date_to=None, chart_id='chart_LME', chart_type='line', chart_height=350):
@@ -210,6 +229,37 @@ def json_chart_builder(date_from=None, date_to=None, chart_id='chart_LME', chart
     }
 
     return context
+
+
+def json_chart_builder_cached(date_from=None, date_to=None, chart_id='chart_LME',
+                              chart_type='line', chart_height=350):
+    """Versao cacheada de json_chart_builder(...). Retorna dict pickavel."""
+    key = f"lme_chart:{date_from}:{date_to}:{chart_id}:{chart_type}:{chart_height}"
+    cached = cache.get(key)
+    if cached is None:
+        cached = json_chart_builder(date_from, date_to, chart_id, chart_type, chart_height)
+        cache.set(key, cached, LME_CACHE_TTL)
+    return cached
+
+
+def summary_data():
+    """Versao cacheada do dict do ultimo LondonMetalExchange (summary)."""
+    key = "lme_summary"
+    cached = cache.get(key)
+    if cached is None:
+        last = LondonMetalExchange.objects.last()
+        cached = {
+            "data": last.date,
+            "cobre": last.cobre,
+            "zinco": last.zinco,
+            "aluminio": last.aluminio,
+            "chumbo": last.chumbo,
+            "estanho": last.estanho,
+            "niquel": last.niquel,
+            "dolar": last.dolar,
+        }
+        cache.set(key, cached, LME_CACHE_TTL)
+    return cached
 
 
 def get_remote_addr(request):

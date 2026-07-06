@@ -9,12 +9,16 @@ from django.shortcuts import redirect, render
 from django.views.decorators.clickjacking import xframe_options_exempt
 
 from .facade import (
+    build_lme_json,
     chart_builder,
     get_lme,
     get_lme_avg,
     get_remote_addr,
     json_builder,
-    json_chart_builder, treats_holidays, variations
+    json_chart_builder_cached,
+    summary_data,
+    treats_holidays,
+    variations,
 )
 from .forms import ProfileForm
 from .models import LondonMetalExchange, Profile
@@ -95,24 +99,14 @@ def json_view(request, date_from=None, date_to=None, limit=100, api_key=None):
         except Profile.DoesNotExist:
             return render(request, 'ops.html')
 
-    lme_prices = get_lme(date_from=date_from, date_to=date_to, limit=limit)
-
-    json_data = json_builder(lme_prices)
+    json_data = build_lme_json(date_from=date_from, date_to=date_to, limit=limit)
 
     data = {"results": json_data}
     return JsonResponse(data)
 
 
 def summary(request):
-    summary_data = LondonMetalExchange.objects.last()
-    data = {"result": {"data": summary_data.date,
-                       "cobre": summary_data.cobre,
-                       "zinco": summary_data.zinco,
-                       "aluminio": summary_data.aluminio,
-                       "chumbo": summary_data.chumbo,
-                       "estanho": summary_data.estanho,
-                       "niquel": summary_data.niquel,
-                       "dolar": summary_data.dolar}}
+    data = {"result": summary_data()}
 
     return JsonResponse(data)
 
@@ -124,9 +118,7 @@ def json_view_data_in_root(request, date_from=None, date_to=None, limit=100, api
         except Profile.DoesNotExist:
             return render(request, 'ops.html')
 
-    lme_prices = get_lme(date_from=date_from, date_to=date_to, limit=limit)
-
-    json_data = json_builder(lme_prices)
+    json_data = build_lme_json(date_from=date_from, date_to=date_to, limit=limit)
 
     return JsonResponse(json_data, safe=False)
 
@@ -141,7 +133,7 @@ def json_for_chart(request, date_from=None, date_to=None, chart_id='LME', chart_
 
     try:
         Profile.objects.get(api_secret_key=secret_key)
-        chart_data = json_chart_builder(date_from, date_to, chart_id, chart_type, chart_height)
+        chart_data = json_chart_builder_cached(date_from, date_to, chart_id, chart_type, chart_height)
 
         response = JsonResponse(chart_data)
         return response
@@ -164,9 +156,7 @@ def api_view_with_token(request, date_from=None, date_to=None, limit=100):
 
     try:
         profile = Profile.objects.get(api_secret_key=secret_key)
-        lme_prices = get_lme(date_from=date_from, date_to=date_to, limit=limit)
-
-        json_data = json_builder(lme_prices)
+        json_data = build_lme_json(date_from=date_from, date_to=date_to, limit=limit)
 
         data = {"results": json_data,
                 "profile": f"{profile.user}",
